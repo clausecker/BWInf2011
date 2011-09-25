@@ -5,6 +5,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{ngerman}
+\usepackage{verbatim}
 
 % Klappt leider nicht mit XeTeX....
 %\usepackage{epsdice}
@@ -105,11 +106,43 @@ Derartige Programme sind quelloffen im Internet verfügbar.
 
 Da \SHAone{} einen String als Eingabe verlangt kann man $3n+z$ z.\,B. in der
 Repräsentation zur Basis 16 (Als Hexadezimalzahl) oder 256 (Jede Stelle ein
-Byte) an die Hashfunktion übergegen.
+Byte) an die Hashfunktion übergeben.
 
 \section{Beispielsitzung}
 
 Es sei angenommen, dass $\hash(x) = \mathop{\SHAone}(x_{16})$ ist, wobei
 $x_{16}$ die Darstellung von $x$ im Hexadezimalsystem bezeichnet. Es ist z.\,B.
-$9876543210_{16} = \texttt{\dq24CB016EA\dq}$.
+$9876543210_{16} = \texttt{\dq24CB016EA\dq}$. Eine Spiel eines Menschen gegen
+die KI auf der Kommandozeile könnte dann mit oben beschriebenem so aussehen:
+
+\begin{verbatim}
+Färöer-KI Version 1.0
+
+Schere ist 0
+Stein  ist 1
+Papier ist 2
+
+01: Hashcode: 00ac0c4bcc5db6cd93caf66afff301aa35963b87
+01: Was spielst du? 1
+01: Du hast gewonnen!
+01: Zufallszahl: 5393799273203848021
+01: Meine Wahl:  0
+01: Eingabe der Hashfunktion: E08FDF958F39F9FF
+
+Weiterspielen? (Y/N) Y
+
+02: Hashcode: fbf904a8b82d571eb82295923c9d4b5d66f0723a
+02: Was spielst du? 2
+02: Du hast verloren!
+02: Zufallszahl: 42701395392693193
+02: Meine Wahl: 2
+02: Eingabe der Hashfunktion: 1C71E141F628B5D
+
+Weiterspielen? (Y/N) N
+
+Du hast 1 Spiel(e) gewonnen.
+Du hast 1 Spiel(e) verloren.
+Du hast 0 Spiel(e) unentschieden gespielt.
+Damit steht es unentschieden.
+\end{verbatim}
 \end{document}
