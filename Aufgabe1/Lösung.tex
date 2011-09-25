@@ -1,0 +1,115 @@
+\documentclass{scrartcl}
+
+\usepackage[biolinum]{libertine}
+\usepackage[euler-digits,small]{eulervm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{ngerman}
+
+% Klappt leider nicht mit XeTeX....
+%\usepackage{epsdice}
+%\newcommand{\dice}[1]{\epsdice{#1}}
+\newcommand{\dice}[1]{\ensuremath{#1}}
+\newcommand{\SHAone}{\texttt{SHA1}}
+\DeclareMathOperator{\hash}{\texttt{HASH}}
+
+\title{Lösung der Aufgabe~1}
+\subtitle{des 30.~Bundeswettbewerbs Informatik}
+\author{Robert Clausecker, Alexandra Piloth}
+
+\begin{document}
+
+\maketitle
+
+\section{Grundidee}
+Es soll für den Spieler verifizierbar sein, dass die künstliche Intelligenz (im
+folgenden kurz KI) nicht »schummeln«, also den Zug des Spieler in der selben
+Runde wissen, kann.  Zugleich soll aber der Spieler keine Chance haben, den Zug
+des Computers zu wissen, bevor dieser ausgeführt wird.  Die Verifizierung soll
+außerdem so wenig wie möglich in das Spielgeschehen eingreifen, sodass ein
+zügiges Durchspielen trotzdem möglich ist.
+
+Zur Erfüllung dieser Erwartungen verwenden wir ein \emph{Commitment Scheme}.  Es
+erlaubt uns die Verifikation durchzuführen, ohne dass dabei eine der Parteien
+Informationen über die andere erhält.  Der Aufwand zur Berechnung der für das
+Commitment Scheme nötigen kryptographischen Funktionen ist für den menschlichen
+Spieler recht hoch, sodass eine Verifikation in jeder Runde nicht in Frage
+kommt.  Es reicht aber aus, nur alle $n$ Runden zu verifizieren, um zu zeigen,
+dass die KI nicht fair spielt. Wird sie nur einmal erwischt, ist der
+Programmierer entlarvt.
+
+\section{Umsetzung}
+Zur Implementierung eines Commitment Schemes verwenden wir eine sichere
+Hashfunktion $\hash(x)$, welche unabhängig vom Verfahren an sich ist.  Mögliche
+Funktionen werden später beschrieben.
+
+Wenn die KI am Zug ist, führt sie folgendes Verfahren durch. Ihr Zug $z$ wird
+durch eine Zahl von $0$ bis $3$ dargestellt, wobei $0$ für Schere, $1$ für Stein
+und $2$ für Papier steht:
+\begin{enumerate}
+\item Bestimme eine hinreichend lange natürliche Zufallszahl $n$.
+\item Bestimme den Hash $h = \hash(3n+z)$ und gib diesen aus.
+\item Erfrage den Zug $Z$ des Spielers,
+\item Gib $z$ und $n$ aus. Der Spieler kann nun die Verifikation durchführen,
+\item Teile dem Spieler mit, ob er gewonnen, verloren oder unentschieden
+  gespielt hat.
+\end{enumerate}
+
+Unter der Annahme, dass es nicht in hinreichender Zeit notwendig ist, eine
+Kollision für die Hashfunktion zu finden, kann die KI nicht schummeln.  Täte sie
+dass, also gäbe sie einen anderen Zug, als ursprünglich berechnet aus, dann
+müsste sich der ausgegebene Hash von einem nachträglich berechneten zwangsläufig
+unterscheiden. Das Gegenteil ist aufgrund der angenommenen Kollisionssicherheit
+von $\hash(x)$ nicht möglich.  Auch ist es unmöglich, aus dem Hash auf den Zug
+der KI zu schließen.
+
+Der Spieler kann jederzeit das Spiel kurzzeitig unterbrechen, um eine
+Verifikation durchzuführen. Um den Spielfluss nicht unnötig zu stören, ist es
+ausreichend, die Verifikation nur ab und zu durchzuführen.  Verifizierte man
+aber in einem festen Intervall, so könnte sich die KI darauf einstellen und
+immer nur dann schummeln, wenn keine Verifikation erfolgt. Es ist angebracht,
+in zufälligen Abständen zu verifizieren. Die KI hat dann keine Möglichkeit der
+Verifizierung durch geschicktes Spielen zu entkommen.
+
+Wir halten es für vertretbar, alle $10$ bis $20$ Spiele eine Verifikation
+durchzuführen. Dazu kann der Spieler nach jedem Spiel vier Münzen werfen. Zeigen
+alle Kopf, führt man eine Verifikation durch. Die Wahrscheinlichkeit dieses
+Ereignisses liegt bei $\frac1{16}$, sodass eine Verifikation im Mittel alle $16$
+Spiele durchgeführt wird. Ist einem das Intervall zu kurz oder zu lang, kann man
+auch mehr oder weniger Münzen nehmen. Eine andere Möglichkeit ist es, mit zwei
+Würfeln zu würfeln. Zeigen beide Würfel \dice{6}, so wird verifiziert.  Die
+Wahrscheinlichkeit hierfür liegt bei $\frac1{36}$, sodass eine Verifikation im
+Mittel alle $36$ Spiele eintritt.
+
+Wichtig bei allen oben genannten Möglichkeiten ist, dass eine Verifizierung
+jederzeit eintreten kann, es also keine Runde gibt, in der garantiert nicht
+verifiziert wird. Gäbe es eine solche, könnte der Computer wieder schummeln.
+
+\section{Hashfunktion}
+Es wird eine Hashfunktion $\hash(x)$ benötigt, bei der das Finden von
+Kollisionen sehr schwer ist; es sollte zumindest mehrere Minuten dauern eine zu
+finden. Mehr ist nicht benötigt, weil bereits eine Verzögerung von einer Minute
+auffallen würde.
+
+Wir hatten uns erst gedacht, eine Funktion zu finden, die von Hand oder mit
+Hilfe eines Taschenrechners berechenbar ist, sodass man zur Verifikation dem
+Computer nicht vertrauen muss. Leider haben wir eine solche nicht finden können,
+da alle Kandidaten zwar einfach berechenbar und für einen Menschen auch nicht zu
+brechen sind, es allerdings für einen Computer kein Problem darstellt, eine
+Kollision in weniger als einer Sekunde zu finden.
+
+Wir haben uns dafür entschieden, eine als kryptographisch sicher anerkannte
+Funktion wie \SHAone{} zu verwenden. Es ist dann aber notwendig, ein
+vertrauenswürdiges Programm zur Berechnung dieser Hashfunktion zu installieren.
+Derartige Programme sind quelloffen im Internet verfügbar.
+
+Da \SHAone{} einen String als Eingabe verlangt kann man $3n+z$ z.\,B. in der
+Repräsentation zur Basis 16 (Als Hexadezimalzahl) oder 256 (Jede Stelle ein
+Byte) an die Hashfunktion übergegen.
+
+\section{Beispielsitzung}
+
+Es sei angenommen, dass $\hash(x) = \mathop{\SHAone}(x_{16})$ ist, wobei
+$x_{16}$ die Darstellung von $x$ im Hexadezimalsystem bezeichnet. Es ist z.\,B.
+$9876543210_{16} = \texttt{\dq24CB016EA\dq}$.
+\end{document}
