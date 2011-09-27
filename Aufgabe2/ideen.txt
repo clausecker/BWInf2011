@@ -1,0 +1,8 @@
+- Darstellung als Gleichungssystem von Booleans
+- 1: Licht, 0: Dunkel
+- Spalten (Variablen) sind Schalter
+- Reihen sind Lampen
+- Koeffizient ist 1, wenn Lampe mit Schalter verbunden
+- zusätzliche Spalte für Lampe ein / aus (andere Seite der Gleichung)
+- Gaußschen Verfahrens zum Finden von Lösungen / ob es überhaupt Lösungen gibt
+- Komplexität O(n³)?
