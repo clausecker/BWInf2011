@@ -160,7 +160,7 @@ reduzierte Stufenform
   0&0&0&0&0&0&1&0
 \end{array}\right)
 \end{equation}
-aus der man nun direkt die Lösung ablesen kann:
+aus der man direkt die Lösung ablesen kann:
 \begin{equation}
 s_1 = 0,\quad
 s_2 = 0,\quad
@@ -170,4 +170,37 @@ s_5 = 1,\quad
 s_6 = 1,\quad
 s_7 = 0.
 \end{equation}
+
+\section{Bestimmung brauchbarer Schaltungen}
+Eine Schaltung ist genau dann brauchbar, wenn es für jeden Tupel von
+Ausgangszuständen $(l_1,l_2,\dots,l_n)$ genau eine Kombination von
+Schalterzuständen $(s_1,s_2,\dots,s_n)$ gibt, sodass diese alle Lampen
+ausschaltet. Das dies gilt, lässt sich durch Anwendung des Schubfachprinzipes
+zeigen: Es gibt bei $n$ Lampen genau $2^n$ Kombinationen von Lampenzuständen und
+ebenso viele Kombinationen von Schalterzuständen. Offensichtlich kann jede
+Schalterkombination genau eine Lampenkombination ausschalten. Gäbe es eine
+Lampenkombination, die mehr als eine Lösung hat, muss es also zwangsläufig eine
+Andere geben, die keine Lösung hat. Dies ist ein Widerspruch zur Annahme, dass
+alle Lampenkombinationen lösbar sind.
+
+Es genügt also, nur die Determinanten zu betrachten, weil diese Aufschluss über
+die eindeutige Lösbarkeit einer Schaltung geben. Hier am Beispiel der zweiten
+Schaltung im Aufgabenblatt. Ihre Koeffizientenmatrix $M$ ist
+\begin{equation}
+\begin{pmatrix}
+  1&1&0&1&0&0&0&0&0\\
+  1&1&1&0&1&0&0&0&0\\
+  0&1&1&0&0&1&0&0&0\\
+  1&0&0&1&1&0&1&0&0\\
+  1&0&1&0&1&0&1&0&1\\
+  0&0&1&0&1&1&0&0&1\\
+  0&0&0&1&0&0&1&1&0\\
+  0&0&0&0&1&0&1&1&1\\
+  0&0&0&0&0&1&0&1&1
+\end{pmatrix}.
+\end{equation}
+Nach Anwendung des Eliminationsverfahrens nach Gauß ergibt sich die
+Stufenmatrix
+%TODO: Praktisches Beispiel: Angegebene Schaltung fortsetzen
+
 \end{document}
