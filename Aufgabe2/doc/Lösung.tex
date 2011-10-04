@@ -1,0 +1,134 @@
+\documentclass{scrartcl}
+
+\usepackage[biolinum]{libertine}
+\usepackage[euler-digits,small]{eulervm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{ngerman}
+\usepackage{verbatim}
+
+\title{Lösung der Aufgabe~2}
+\subtitle{des 30.~Bundeswettbewerbs Informatik}
+\author{Robert Clausecker, Alexandra Piloth}
+%\date{}
+
+% Syntaxdefinitionen
+\newcommand{\ftwo}{\ensuremath{\mathbb F_2}}
+\newcommand{\bigO}{O}
+\newcommand{\xor}{\oplus}
+\begin{document}
+
+\maketitle
+
+\section*{Vorbemerkung}
+Im Folgenden bezeichne $0$ den logischen Wert \emph{falsch} und $1$ den
+logischen Wert \emph{wahr}. $a\land b$ ist die logische und-Verknüpfung von $a$
+und $b$, $a\xor b$ ist analog die exklusiv-oder-Verknüpfung. Insbesondere gilt:
+$a\xor b=a+b\mod 2$ und $a\land b=a\cdot b\mod 2$.
+
+\section{Grundidee}
+Wir betrachten eine Anordnung von Schaltern und Lampen als \emph{lineares
+Gleichungssystem} im Körper \ftwo.  Dieser hat die Elemente $1$ (Lampe an bzw.
+Schalter gedrückt) und $0$ (Lampe aus bzw. Schalter nicht gedrückt).
+
+Durch allgemein bekannte Algorithmen, wie das Gaußverfahren, lässt sich eine
+Schalterstellung zum Ausschalten aller Lampen in $\bigO(n^3)$ finden; $n$ ist
+hierbei die Anzahl der Schalter bzw. Lampen. Nimmt man an, dass ein Bitvektor
+der Länge $n$ in ein Maschinenwort passt, so kann eine Lösung sogar in $\bigO(
+n^2)$ gefunden werden. Herauszufinden, ob eine Schaltung brauchbar ist, hat eine
+ähnliche Komplexität, weil das ein Teilproblem des og. Problems ist.
+
+\section{Darstellung als Gleichungssystem}
+Seien $s_1, s_2,\dots, s_n$ die Zustände der Schalter und $l_1, l_2,\dots,l_n$
+die Ausgangszustände der dazu gehörigen Lampen. Jede Lampe wird durch eine Reihe
+von Schaltern $s_\alpha, s_\beta,\dots$ umgeschaltet. Diese Umschaltungen lassen
+sich als XOR-Operationen darstellen. Der Zustand einer Lampe ist also
+\begin{equation}
+l_k \xor s_\alpha \xor s_\beta \xor s_\gamma \xor \cdots
+\end{equation}
+Eine Schalterstellung, welche die Lampe $l_k$ ausschaltet ist damit zugleich
+eine Lösung der Gleichung
+\begin{equation}
+s_\alpha \xor s_\beta \xor s_\gamma \xor \cdots = l_k\label{firstEq}
+\end{equation}
+Um diese Gleichungen in ein einheitliches Format zu bringen, führen
+wir die Koeffizienten $v_{a,b}$ ein. $v_{a,b}$ ist $1$, genau dann wenn Lampe
+$l_a$ mit Schalter $s_b$ verbunden ist. Somit lässt sich Gleichung~\ref{firstEq}
+als
+\begin{equation}
+v_{k,1}\land s_1\xor v_{k,2}\land s_2\xor\cdots\xor v_{k,k}\land s_k=l_k
+\end{equation}
+ausdrücken.
+
+Betrachtet man nun $\xor$ und $\land$ als Addition und Multiplikation im Körper
+\ftwo, dann kann man nun die $n$ Gleichungen der Lampen als lineares
+Gleichungssystem in den Variablen $s_1$ bis $s_n$ auffassen:
+\begin{equation}
+\begin{cases}
+  v_{1,1}s_1+v_{1,2}s_2+\dots+v_{1,n}s_n&=l_1\\
+  v_{2,1}s_1+v_{2,2}s_2+\dots+v_{2,n}s_n&=l_2\\
+  \hfil\vdots\hfil&\hfil\vdots\hfil\\
+  v_{n,1}s_1+v_{n,2}s_n+\dots+v_{n,n}s_n&=l_n\\
+\end{cases}
+\end{equation}
+
+Dieses lässt sich wiederum durch die Koeffizientenmatrix
+\begin{equation}
+M=
+\begin{pmatrix}
+  v_{1,1}&v_{1,2}&\cdots&v_{1,n}\\
+  v_{2,1}&v_{2,2}&\cdots&v_{2,n}\\
+  \vdots &\vdots &\ddots&\vdots\\
+  v_{1,n}&v_{2,n}&\cdots&v_{n,n}
+\end{pmatrix}
+\end{equation}
+und den Spaltenvektor $A$ der Ausgangszustände $l_1$ bis $l_n$ darstellen. Für
+ein effizientes Arbeiten speichern wir jede Zeile von $M$ in ein- oder mehreren
+Maschinenwörtern. Da jeder Eintrag in der Matrix nur ein Bit lang ist, kann man
+so über eingebaute Bitoperationen ganze Zeilen effizient addieren. Unter der
+Annahme, dass eine Zeile komplett in ein Maschinenwort passt, kann man zwei
+Zeilen in $\bigO(1)$ mit einer XOR-Operation addieren.
+
+\section{Lösbarkeit einer einzelnen Konfiguration}
+Wir betrachten nun eine vollständige Konfiguration einer Schaltung, bestehend
+aus der Schaltung $M$ und den Ausgangszuständen $A$. In (\ref{exampleGame}) ist
+die Konfiguration angegeben, die in der ersten Teilaufgabe zu analysieren ist.
+Dabei ist links $M$ und rechts -- durch einen Balken abgeteilt -- $A$ angegeben.
+\begin{equation}
+M\vert A=\left(
+\begin{array}{ccccccc|c}
+  1&1&0&0&0&0&1&0\\
+  1&1&1&0&0&0&0&0\\
+  0&1&1&1&0&0&0&1\\
+  0&0&1&1&1&0&0&0\\
+  0&0&0&1&1&1&0&1\\
+  0&0&0&0&1&1&1&0\\
+  1&0&0&0&0&1&1&1 
+\end{array}\right)\label{exampleGame}
+\end{equation}
+
+Zunächst wenden wir das \emph{Gaußsche Eliminationsverfahren} an, um die
+Matrix in Stufenform zu überführen. Damit erhält man einen Überblick über die
+Lösbarkeit des Gleichungssystems. Es gilt: Wenn die Determinante, also das
+Produkt der Werte in der Hauptdiagonale, ungleich $0$ ist, dann existiert genau
+eine Lösung. Wenn nicht, dann existiert entweder keine oder höchstens so viele
+verschiedene Lösungen, wie Nullen in der Diagonale vorhanden sind.
+
+Für den ersten Fall kann man mit dem \emph{Gauß-Jordan-Verfahren} die einzelnen
+Lösungen berechnen. Im zweiten Fall transformieren wir die Matrix so, dass alle
+Zeilen, in denen $v_{k,k} = 0$ ist, komplett leer sind. dies muss möglich sein,
+weil durch die Stufenform  in jeder folgenden Zeile mindestens ein Eintrag
+weniger als in der überstehenden stehen muss. Weil die Matrix quadratisch ist,
+muss für den Fall, dass die Differenz der Anzahl relevanter Einträge zweier
+aufeinander folgender Zeilen größer als $1$ ist, mindestens eine Leerzeile 
+(Zeile der Form $(0\ 0\ \dots\ 0\,|\,0)$) am Ende stehen. Diese wird nach oben
+in die entsprechende Lücke verschoben.
+
+Das Gleichungssystem hat nun entweder keine oder $2^n$ Lösungen, wobei $n$ die
+Anzahl der Leerzeilen ist. Ersterer Fall tritt genau dann ein, wenn der zur
+Zeile $k$ zugehörige Wert in $A$ ungleich $0$ ist, also es eine Zeile der Form
+$0=1$ gibt. Im zweiten Fall verwendet man das genauso das Gauß-Jordan-Verfahren
+mit dem Unterschied, dass im Falle einer Leerzeile der Wert für $s_k$ beliebig
+gesetzt werden kann. Für beide Einsetzungen gibt es jeweils eine Lösung, was im
+Endeffekt zu oben beschriebener Anzahl führt.
+\end{document}
