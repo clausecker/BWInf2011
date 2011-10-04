@@ -20,11 +20,13 @@
 
 \maketitle
 
-\section*{Vorbemerkung}
+\section*{Vorbemerkungen}
 Im Folgenden bezeichne $0$ den logischen Wert \emph{falsch} und $1$ den
 logischen Wert \emph{wahr}. $a\land b$ ist die logische und-Verknüpfung von $a$
-und $b$, $a\xor b$ ist analog die exklusiv-oder-Verknüpfung. Insbesondere gilt:
+und $b$, $a\xor b$ ist analog die XOR-Verknüpfung. Insbesondere gilt:
 $a\xor b=a+b\mod 2$ und $a\land b=a\cdot b\mod 2$.
+
+Die Implementationen der beschriebenen Algorithmen finden sich im Anhang.
 
 \section{Grundidee}
 Wir betrachten eine Anordnung von Schaltern und Lampen als \emph{lineares
@@ -87,7 +89,7 @@ ein effizientes Arbeiten speichern wir jede Zeile von $M$ in ein- oder mehreren
 Maschinenwörtern. Da jeder Eintrag in der Matrix nur ein Bit lang ist, kann man
 so über eingebaute Bitoperationen ganze Zeilen effizient addieren. Unter der
 Annahme, dass eine Zeile komplett in ein Maschinenwort passt, kann man zwei
-Zeilen in $\bigO(1)$ mit einer XOR-Operation addieren.
+Zeilen in $\bigO(1)$ mit einem XOR addieren.
 
 \section{Lösbarkeit einer einzelnen Konfiguration}
 Wir betrachten nun eine vollständige Konfiguration einer Schaltung, bestehend
@@ -131,4 +133,41 @@ $0=1$ gibt. Im zweiten Fall verwendet man das genauso das Gauß-Jordan-Verfahren
 mit dem Unterschied, dass im Falle einer Leerzeile der Wert für $s_k$ beliebig
 gesetzt werden kann. Für beide Einsetzungen gibt es jeweils eine Lösung, was im
 Endeffekt zu oben beschriebener Anzahl führt.
+
+Angewandt auf die Matrix in (\ref{exampleGame}) ergibt sich die Stufenform
+\begin{equation}
+\left(\begin{array}{ccccccc|c}
+  1&1&0&0&0&0&1&0\\
+  0&1&1&1&0&0&0&1\\
+  0&0&1&0&0&0&1&0\\
+  0&0&0&1&1&0&1&0\\
+  0&0&0&0&1&1&1&0\\
+  0&0&0&0&0&1&1&1\\
+  0&0&0&0&0&0&1&0
+\end{array}\right).
+\end{equation}
+Die Determinante ist $1$, es existiert genau eine Lösung. Nun kann man das
+Gauß-Jordan-Verfahren anwenden, um diese zu bestimmen. Es ergibt sich die
+reduzierte Stufenform
+\begin{equation}
+\left(\begin{array}{ccccccc|c}
+  1&0&0&0&0&0&0&0\\
+  0&1&0&0&0&0&0&0\\
+  0&0&1&0&0&0&0&0\\
+  0&0&0&1&0&0&0&1\\
+  0&0&0&0&1&0&0&1\\
+  0&0&0&0&0&1&0&1\\
+  0&0&0&0&0&0&1&0
+\end{array}\right)
+\end{equation}
+aus der man nun direkt die Lösung ablesen kann:
+\begin{equation}
+s_1 = 0,\quad
+s_2 = 0,\quad
+s_3 = 0,\quad
+s_4 = 1,\quad
+s_5 = 1,\quad
+s_6 = 1,\quad
+s_7 = 0.
+\end{equation}
 \end{document}
