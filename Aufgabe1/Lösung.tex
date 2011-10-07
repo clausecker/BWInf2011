@@ -10,7 +10,7 @@
 % Klappt leider nicht mit XeTeX....
 %\usepackage{epsdice}
 %\newcommand{\dice}[1]{\epsdice{#1}}
-\newcommand{\dice}[1]{\ensuremath{#1}}
+\newcommand{\dice}[1]{#1}
 \newcommand{\SHAone}{\texttt{SHA1}}
 \DeclareMathOperator{\hash}{\texttt{HASH}}
 
@@ -73,15 +73,15 @@ immer nur dann schummeln, wenn keine Verifikation erfolgt. Es ist angebracht,
 in zufälligen Abständen zu verifizieren. Die KI hat dann keine Möglichkeit der
 Verifizierung durch geschicktes Spielen zu entkommen.
 
-Wir halten es für vertretbar, alle $10$ bis $20$ Spiele eine Verifikation
+Wir halten es für vertretbar, alle zehn bis zwanzig Spiele eine Verifikation
 durchzuführen. Dazu kann der Spieler nach jedem Spiel vier Münzen werfen. Zeigen
 alle Kopf, führt man eine Verifikation durch. Die Wahrscheinlichkeit dieses
-Ereignisses liegt bei $\frac1{16}$, sodass eine Verifikation im Mittel alle $16$
+Ereignisses liegt bei $\frac1{16}$, sodass eine Verifikation im Mittel alle 16
 Spiele durchgeführt wird. Ist einem das Intervall zu kurz oder zu lang, kann man
 auch mehr oder weniger Münzen nehmen. Eine andere Möglichkeit ist es, mit zwei
 Würfeln zu würfeln. Zeigen beide Würfel \dice{6}, so wird verifiziert.  Die
 Wahrscheinlichkeit hierfür liegt bei $\frac1{36}$, sodass eine Verifikation im
-Mittel alle $36$ Spiele eintritt.
+Mittel alle 36 Spiele eintritt.
 
 Wichtig bei allen oben genannten Möglichkeiten ist, dass eine Verifizierung
 jederzeit eintreten kann, es also keine Runde gibt, in der garantiert nicht
