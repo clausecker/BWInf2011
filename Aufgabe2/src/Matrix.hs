@@ -1,5 +1,12 @@
 {-# LANGUAGE BangPatterns #-}
-module Matrix where
+module Matrix (
+    Matrix (..),
+    MatrixRow (..),
+    (+=+),
+    insertVar,
+    augmentRHS,
+    RHS ()
+  ) where
 
 import Data.Bits
 
@@ -7,6 +14,27 @@ data MatrixRow rhs = MatrixRow !Integer !rhs
 
 -- Eine Darstellung als Liste ist für unsere Zwecke vollkommen ausreichend.
 newtype Matrix rhs = Matrix [MatrixRow rhs]
+
+-- Addiert zwei Reihen einer Matrix
+(+=+) :: RHS rhs => MatrixRow rhs -> MatrixRow rhs -> MatrixRow rhs
+(MatrixRow al ar) +=+ (MatrixRow bl br) = MatrixRow (al `xor` bl) (ar =+ br)
+
+-- Setzt für Variable n ein (Wichtig beim Gauß-Jordan-Verfahren). Zählung
+-- beginnt bei 0 (wie immer)
+insertVar :: RHS rhs => Int -> rhs -> MatrixRow rhs -> MatrixRow rhs
+insertVar n ins row@(MatrixRow lhs rhs)
+  | testBit lhs n = MatrixRow (clearBit lhs n) (ins =+ rhs)
+  | otherwise     = row
+
+-- Fügt eine Einheitsmatrix auf der rechten Seite hinzu
+augmentRHS :: Matrix () -> Matrix Integer
+augmentRHS (Matrix m) = Matrix $ go m 0 where
+  go [] !_ = []
+  go (MatrixRow lhs _ : xs) n = (MatrixRow lhs $ bit n) : go xs (n + 1)
+
+--------
+-- Hilfsfunktionen
+--------
 
 instance RHS rhs => Show (Matrix rhs) where
   show (Matrix m) = unlines (map showRow m) where
