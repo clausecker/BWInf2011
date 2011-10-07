@@ -38,7 +38,7 @@ Schalterstellung zum Ausschalten aller Lampen in $\bigO(n^3)$ finden; $n$ ist
 hierbei die Anzahl der Schalter bzw. Lampen. Nimmt man an, dass ein Bitvektor
 der Länge $n$ in ein Maschinenwort passt, so kann eine Lösung sogar in $\bigO(
 n^2)$ gefunden werden. Herauszufinden, ob eine Schaltung brauchbar ist, hat eine
-ähnliche Komplexität, weil das ein Teilproblem des og. Problems ist.
+ähnliche Komplexität, weil das ein Teilproblem des o.\,g. Problems ist.
 
 \section{Darstellung als Gleichungssystem}
 Seien $s_1, s_2,\dots, s_n$ die Zustände der Schalter und $l_1, l_2,\dots,l_n$
@@ -118,21 +118,33 @@ verschiedene Lösungen, wie Nullen in der Diagonale vorhanden sind.
 
 Für den ersten Fall kann man mit dem \emph{Gauß-Jordan-Verfahren} die einzelnen
 Lösungen berechnen. Im zweiten Fall transformieren wir die Matrix so, dass alle
-Zeilen, in denen $v_{k,k} = 0$ ist, komplett leer sind. dies muss möglich sein,
-weil durch die Stufenform  in jeder folgenden Zeile mindestens ein Eintrag
+Zeilen, in denen $v_{k,k} = 0$ ist, komplett leer sind. Dies muss möglich sein,
+weil durch die Stufenform in jeder folgenden Zeile mindestens ein Eintrag
 weniger als in der überstehenden stehen muss. Weil die Matrix quadratisch ist,
 muss für den Fall, dass die Differenz der Anzahl relevanter Einträge zweier
 aufeinander folgender Zeilen größer als $1$ ist, mindestens eine Leerzeile 
 (Zeile der Form $(0\ 0\ \dots\ 0\,|\,0)$) am Ende stehen. Diese wird nach oben
-in die entsprechende Lücke verschoben.
+in die entsprechende Lücke verschoben. Eine derartig transformierte Matrix mit
+Determinante $0$ ist in (\ref{echelonZero}) zu sehen.
+\begin{equation}
+\left(\begin{array}{cccccc|c}
+  1&0&0&0&1&0&1\\
+  0&0&0&0&0&0&0\\
+  0&0&1&1&1&1&1\\
+  0&0&0&1&0&1&0\\
+  0&0&0&0&0&0&1\\
+  0&0&0&0&0&1&0
+\end{array}\right)\label{echelonZero}
+\end{equation}
 
 Das Gleichungssystem hat nun entweder keine oder $2^n$ Lösungen, wobei $n$ die
 Anzahl der Leerzeilen ist. Ersterer Fall tritt genau dann ein, wenn der zur
 Zeile $k$ zugehörige Wert in $A$ ungleich $0$ ist, also es eine Zeile der Form
-$0=1$ gibt. Im zweiten Fall verwendet man das genauso das Gauß-Jordan-Verfahren
-mit dem Unterschied, dass im Falle einer Leerzeile der Wert für $s_k$ beliebig
-gesetzt werden kann. Für beide Einsetzungen gibt es jeweils eine Lösung, was im
-Endeffekt zu oben beschriebener Anzahl führt.
+$0=1$ gibt. Beide Fälle sind in (\ref{echelonZero}) gezeigt; der Erste in Zeile
+2, der Zweite in Zeile 5. Im zweiten Fall verwendet man das genauso das
+Gauß-Jordan-Verfahren mit dem Unterschied, dass im Falle einer Leerzeile der
+Wert für $s_k$ beliebig gesetzt werden kann. Für beide Einsetzungen gibt es
+jeweils eine Lösung, was im Endeffekt zu oben beschriebener Anzahl führt.
 
 Angewandt auf die Matrix in (\ref{exampleGame}) ergibt sich die Stufenform
 \begin{equation}
