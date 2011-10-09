@@ -3,8 +3,10 @@ module Matrix (
     Matrix (..),
     MatrixRow (..),
     (+=+),
-    insertVar,
     augmentRHS,
+    columnSet,
+    insertVar,
+    rowEmpty,
     RHS ()
   ) where
 
@@ -31,6 +33,13 @@ augmentRHS :: Matrix () -> Matrix Integer
 augmentRHS (Matrix m) = Matrix $ go m 0 where
   go [] !_ = []
   go (MatrixRow lhs _ : xs) n = (MatrixRow lhs $ bit n) : go xs (n + 1)
+
+columnSet :: Int -> MatrixRow rhs -> Bool
+columnSet n (MatrixRow lhs _) = testBit lhs n
+
+-- Sind alle Einträge einer Zeile 0?
+rowEmpty :: MatrixRow rhs -> Bool
+rowEmpty (MatrixRow lhs _) = lhs == 0
 
 --------
 -- Hilfsfunktionen
