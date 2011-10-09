@@ -213,6 +213,19 @@ Schaltung im Aufgabenblatt. Ihre Koeffizientenmatrix $M$ ist
 \end{equation}
 Nach Anwendung des Gaußschen Eliminationsverfahrens ergibt sich die
 Stufenmatrix
-%TODO: Praktisches Beispiel: Angegebene Schaltung fortsetzen
-
+\begin{equation}
+\begin{pmatrix}
+  1&1&0&1&0&0&0&0&0\\
+  0&1&0&0&1&0&1&0&0\\
+  0&0&1&1&0&0&0&0&1\\
+  0&0&0&1&1&1&1&0&1\\
+  0&0&0&0&1&1&0&1&1\\
+  0&0&0&0&0&1&0&1&0\\
+  0&0&0&0&0&0&1&1&0\\
+  0&0&0&0&0&0&0&1&1\\
+  0&0&0&0&0&0&0&0&1
+\end{pmatrix},
+\end{equation}
+deren Determinante $1$ ist. Das Gleichungssystem hat unabhängig von den
+Ausgangszuständen genau eine Lösung, damit ist die Schaltung brauchbar.
 \end{document}
