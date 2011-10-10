@@ -92,6 +92,7 @@ Annahme, dass eine Zeile komplett in ein Maschinenwort passt, kann man zwei
 Zeilen in $\bigO(1)$ mit einem XOR addieren.
 
 \section{Lösbarkeit einer einzelnen Konfiguration}
+\label{singleConf}
 Wir betrachten nun eine vollständige Konfiguration einer Schaltung, bestehend
 aus der Schaltung $M$ und den Ausgangszuständen $A$. In (\ref{exampleGame}) ist
 die Konfiguration angegeben, die in der ersten Teilaufgabe zu analysieren ist.
@@ -117,36 +118,41 @@ eine Lösung. Wenn nicht, dann existiert entweder keine oder höchstens so viele
 verschiedene Lösungen, wie Nullen in der Diagonale vorhanden sind.
 
 Für den ersten Fall kann man mit dem \emph{Gauß-Jordan-Verfahren} die einzelnen
-Lösungen berechnen. Im zweiten Fall transformieren wir die Matrix so, dass alle
-Zeilen, in denen $v_{k,k} = 0$ ist, komplett leer sind. Dies muss möglich sein,
+Lösungen berechnen. Im zweiten Fall transformieren wir die Matrix so, dass die
+Zeilen, die komplett leer sind die Untersten sind. Dies muss möglich sein,
 weil durch die Stufenform in jeder folgenden Zeile mindestens ein Eintrag
 weniger als in der überstehenden stehen muss. Weil die Matrix quadratisch ist,
 muss für den Fall, dass die Differenz der Anzahl relevanter Einträge zweier
 aufeinander folgender Zeilen größer als $1$ ist, mindestens eine Leerzeile 
-(Zeile der Form $(0\ 0\ \dots\ 0\,|\,0)$) am Ende stehen. Diese wird nach oben
-in die entsprechende Lücke verschoben. Eine derartig transformierte Matrix mit
-Determinante $0$ ist in (\ref{echelonZero}) zu sehen.
+(Zeile der Form $(0\ 0\ \dots\ 0\,|\,0)$) am Ende stehen. Eine derartig
+transformierte Matrix mit Determinante $0$ ist in (\ref{echelonZero}) zu sehen:
 \begin{equation}
 \left(\begin{array}{cccccc|c}
   1&0&0&0&1&0&1\\
-  0&0&0&0&0&0&0\\
   0&0&1&1&1&1&1\\
   0&0&0&1&0&1&0\\
+  0&0&0&0&0&1&0\\
+  0&0&0&0&0&0&0\\
   0&0&0&0&0&0&1\\
-  0&0&0&0&0&1&0
 \end{array}\right)\label{echelonZero}
 \end{equation}
 
 Das Gleichungssystem hat nun entweder keine oder $2^n$ Lösungen, wobei $n$ die
 Anzahl der Leerzeilen ist. Ersterer Fall tritt genau dann ein, wenn der zur
 Zeile $k$ zugehörige Wert in $A$ ungleich $0$ ist, also es eine Zeile der Form
-$0=1$ gibt. Beide Fälle sind in (\ref{echelonZero}) gezeigt; der Erste in Zeile
-2, der Zweite in Zeile 5. Im zweiten Fall verwendet man das genauso das
-Gauß-Jordan-Verfahren mit dem Unterschied, dass im Falle einer Leerzeile der
-Wert für $s_k$ beliebig gesetzt werden kann. Für beide Einsetzungen gibt es
-jeweils eine Lösung, was im Endeffekt zu oben beschriebener Anzahl führt.
+$0=1$ gibt. Beide Fälle sind in (\ref{echelonZero}) gezeigt; der Erste in der
+vorletzten, der Zweite in der letzten Zeile.
 
-Angewandt auf die Matrix in (\ref{exampleGame}) ergibt sich die Stufenform
+Für den Fall, dass es nun Lösungen gibt, kann man das Gauß-Jordan-Verfahren mit
+der Einschränkung anwenden, dass im Falle eines Sprunges (also wenn in der
+überstehenden Zeile mehr als eine Spalte von links mehr ausgefüllt ist), die
+übersprungenen Variablen beliebig gesetzt werden können. Offensichtlich ergibt
+dies zwei Lösungen pro übersprungener Spalte. Da es genauso viele Leerzeilen wie
+übersprungene Spalten gibt, ist die Anzahl der Lösung wie oben beschrieben
+$2^n$.
+
+Nach Anwendung des Gauß-Verfahrens auf die Matrix (\ref{exampleGame}) ergibt
+sich die Stufenform
 \begin{equation}
 \left(\begin{array}{ccccccc|c}
   1&1&0&0&0&0&1&0\\
@@ -172,7 +178,8 @@ reduzierte Stufenform
   0&0&0&0&0&0&1&0
 \end{array}\right)
 \end{equation}
-aus der man direkt die Lösung ablesen kann:
+aus der man direkt die Lösung des zu (\ref{exampleGame}) gehörigen
+Gleichungssystems direkt ablesen kann:
 \begin{equation}
 s_1 = 0,\quad
 s_2 = 0,\quad
@@ -196,8 +203,8 @@ Andere geben, die keine Lösung hat. Dies ist ein Widerspruch zur Annahme, dass
 alle Lampenkombinationen lösbar sind.
 
 Es genügt also, nur die Determinanten zu betrachten, weil diese Aufschluss über
-die eindeutige Lösbarkeit einer Schaltung geben. Hier am Beispiel der zweiten
-Schaltung im Aufgabenblatt. Ihre Koeffizientenmatrix $M$ ist
+die eindeutige Lösbarkeit einer Schaltung geben, wie hier am Beispiel der
+zweiten Schaltung im Aufgabenblatt. Ihre Koeffizientenmatrix $M$ ist
 \begin{equation}
 \begin{pmatrix}
   1&1&0&1&0&0&0&0&0\\
@@ -228,4 +235,60 @@ Stufenmatrix
 \end{equation}
 deren Determinante $1$ ist. Das Gleichungssystem hat unabhängig von den
 Ausgangszuständen genau eine Lösung, damit ist die Schaltung brauchbar.
+
+\section{Bestimmung von Lösungsschemen}
+Ein weiterer Teil der Aufgabenstellung ist es, eine allgemeine Lösungsformel
+für beliebige Ausgangszustände zu finden. Dies ist nur möglich, wenn die
+Schaltung nach o.\,g. Kriterium brauchbar ist, ansonsten kann man nur
+spezifische Fälle mit der in Abschnitt \ref{singleConf} beschriebenen Methode
+lösen.
+
+Die Idee der allgemeinen Lösung ist es, das Gleichungssystem derart zu
+transformieren, dass die Ausgangszustände der Lampen $l_1\dots l_n$ die
+Unbekannten und die Zustände der Schalter $s_1\dots s_n$ die Glieder auf der
+rechten Seite sind. In ein solches Gleichungssystem kann man nun einfach einfach
+den Ausgangszustand einsetzen und erhält eine Lösung in Form der nötigen
+Schalterzustände.
+\begin{equation}\label{transposedSys}
+\begin{cases}
+  u_{1,1}l_1+u_{1,2}l_2+\dots+u_{1,n}l_n&=s_1\\
+  u_{2,1}l_1+u_{2,2}l_2+\dots+u_{2,n}l_n&=s_2\\
+  \hfil\vdots\hfil&\hfil\vdots\hfil\\
+  u_{n,1}l_1+u_{n,2}l_n+\dots+u_{n,n}l_n&=s_n\\
+\end{cases}
+\end{equation}
+
+Glücklicherweise kann man die Koeffizienten $u_{i,j}$ dieses Systems recht
+einfach berechnen: Man fügt hierzu an die rechte Seite der ursprünglichen
+Koeffizientenmatrix $M$ eine Einheitsmatrix der selben Größe an und verwendet
+diese anstatt von $A$ in der Gauß-Jordan-Elimination. Am Ende ist die
+linke Matrix eine Einheitsmatrix, während die rechte Matrix, $M'$, die gesuchte
+Matrix der Koeffizienten $u_{i,j}$ ist.
+\begin{align}
+\text{vorher:}\quad&
+\left(\begin{array}{cccc|cccc}
+  v_{1,1}&v_{1,2}&\cdots&v_{1,n}&1&0&\cdots&0\\
+  v_{2,1}&v_{2,2}&\cdots&v_{2,n}&0&1&\cdots&0\\
+  \vdots&\vdots&\ddots&\vdots&\vdots&\vdots&\ddots&\vdots\\
+  v_{n,1}&v_{n,2}&\cdots&v_{n,n}&0&0&\cdots&1
+\end{array}\right)\\
+\text{nachher:}\quad&
+\left(\begin{array}{cccc|cccc}
+  1&0&\cdots&0&u_{1,1}&u_{1,2}&\cdots&u_{1,n}\\
+  0&1&\cdots&0&u_{2,1}&u_{2,2}&\cdots&u_{2,n}\\
+  \vdots&\vdots&\ddots&\vdots&\vdots&\vdots&\ddots&\vdots\\
+  0&0&\cdots&1&u_{n,1}&u_{n,2}&\cdots&u_{n,n}\\
+\end{array}\right)
+\end{align}
+
+Es ist nicht schwer zu erkennen, warum dies funktioniert: Bei der normalen
+Gauß-Jordan-Elimination verwendet man die Ausgangszustände im Vektor $A$. Da die
+verwendeten Operationen aber nur Addition zweier Reihen sowie Einsetzung sind,
+kann man einen Eintrag in $A$ auch als Summe aller Ausgangszustände mit
+geeigneten Koeffizienten darstellen. Am Anfang sind nur diejenigen Koeffizienten
+$1$, die zur jeweiligen Zeile gehören -- dies ist die Einheitsmatrix. Am Ende
+ist hingegen die linke Matrix eine Einheitsmatrix. Schreibt man dies wiederum
+als Gleichungssystem, so ist die linke Matrix die rechte Seite von
+(\ref{transposedSys}) und umgekehrt.
+
 \end{document}

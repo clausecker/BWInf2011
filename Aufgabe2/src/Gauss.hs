@@ -38,6 +38,7 @@ gaussianElemination (Matrix m) = Matrix $ go 0 m where
       (pivot:m1')          -> pivot : go (n+1) (map (pivot +=+) m1' ++ m0)
     where (m1,m0) = partition (columnSet n) m
 
+
 -- TEST TEST TEST
 
 m7  :: Matrix Bool
@@ -58,6 +59,19 @@ m9 = read
   \1 1 1 0 1 0 0 0 0\n\
   \0 1 1 0 0 1 0 0 0\n\
   \1 0 0 1 1 0 1 0 0\n\
+  \1 0 1 0 1 0 1 0 1\n\
+  \0 0 1 0 1 1 0 0 1\n\
+  \0 0 0 1 0 0 1 1 0\n\
+  \0 0 0 0 1 0 1 1 1\n\
+  \0 0 0 0 0 1 0 1 1"
+
+-- mx: Matrix mit zwei Leerzeilen
+mx :: Matrix ()
+mx = read
+  "1 0 0 0 1 1 0 0 0\n\
+  \1 1 1 0 1 0 0 0 0\n\
+  \0 1 1 0 0 1 0 0 0\n\
+  \1 0 1 0 1 0 1 0 1\n\
   \1 0 1 0 1 0 1 0 1\n\
   \0 0 1 0 1 1 0 0 1\n\
   \0 0 0 1 0 0 1 1 0\n\
