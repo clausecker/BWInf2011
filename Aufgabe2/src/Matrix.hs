@@ -1,13 +1,16 @@
 {-# LANGUAGE BangPatterns #-}
 module Matrix (
     Matrix (..),
-    MatrixRow (..),
+    MatrixRow (),
     (+=+),
     augmentRHS,
     columnSet,
+    getRHS,
     insertVar,
+    isFirstCol,
+    makeRow,
     rowEmpty,
-    RHS ()
+    RHS (..)
   ) where
 
 import Data.Bits
@@ -34,13 +37,25 @@ augmentRHS (Matrix m) = Matrix $ go m 0 where
   go [] !_ = []
   go (MatrixRow lhs _ : xs) n = (MatrixRow lhs $ bit n) : go xs (n + 1)
 
+-- Ist Spalte n gesetzt?
 columnSet :: Int -> MatrixRow rhs -> Bool
 columnSet n (MatrixRow lhs _) = testBit lhs n
+
+-- Ist Spalte n die erste, die gesetzt ist?
+isFirstCol :: Int -> MatrixRow rhs -> Bool
+isFirstCol n (MatrixRow lhs _) = (-1 `shiftL` n) .&. lhs == lhs
 
 -- Sind alle Einträge einer Zeile 0?
 rowEmpty :: MatrixRow rhs -> Bool
 rowEmpty (MatrixRow lhs _) = lhs == 0
 
+-- liefert rechte Seite der Matrix
+getRHS :: MatrixRow rhs -> rhs
+getRHS (MatrixRow _ rhs) = rhs
+
+-- liefert eine Zeile, in der Spalte n gesetzt ist und mit gegebener RHS.
+makeRow :: Int -> rhs -> MatrixRow rhs
+makeRow n rhs = MatrixRow (bit n) rhs
 --------
 -- Hilfsfunktionen
 --------
@@ -66,26 +81,31 @@ class RHS a where
   -- | Addiert zwei Zeilen. Auch für Einsetzung verwendet. Symbol: Addition auf
   -- der rechten Seite vom Gleichheitszeichen, also =+
   (=+) :: a -> a -> a
-  -- | Falls die Determinante 0 ist, ist die rechte Seite hier 0? Wenn nicht
-  -- eindeutig definiert, immer False.
-  isNull :: a -> Bool
   -- | Rechte Seite anzeigen (für show usw.). Argument ist Anzahl der Zeilen.
   showRHS :: Int -> a -> String
   -- | Rechte Seite einlesen. Exception wenn Fehlschlag. Eingabe ist eine Liste
   -- von Dingen, die ursprünglich mit einem Leerzeichen getrennt waren.
   readRHS :: [String] -> a
+  -- | Falls die Determinante 0 ist, ist die rechte Seite hier 0? Wenn nicht
+  -- eindeutig definiert, immer False.
+  isZero :: a -> Bool
+  isZero = const False
+  -- | Bestimmt beide RHS-Werte. Dies ist nur für den Fall Bool bedeutsam, in
+  -- allen anderen, wo isZero eh immer False liefert, ist dieser Wert belanglos.
+  bothRHS :: (a,a)
+  bothRHS = undefined
 
 -- keine rechte Seite; es wird nur die Koeffizientenmatrix betrachtet
 instance RHS () where
   _ =+ _      = ()
-  isNull _    = False
   showRHS _ _ = ""
   readRHS _   = ()
 
 -- Ein spezieller Fall wird betrachtet
 instance RHS Bool where
   (=+)        = (/=)
-  isNull      = not
+  isZero      = not
+  bothRHS     = (False,True)
   showRHS _ x | x         = " | 1"
               | otherwise = " | 0"
   readRHS ["|","1"] = True
@@ -98,7 +118,6 @@ instance RHS Bool where
 -- der Zählung der Lampen von links begonnen wird.
 instance RHS Integer where
   (=+)         = xor
-  isNull       = (== 0)
   showRHS n x  = " |" ++ showIntegerLen n x
   readRHS ("|":xs) = foldr1 (\a b -> a + 2*b) $ map read xs
   readRHS r        = error $
