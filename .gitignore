@@ -2,3 +2,7 @@
 *.log
 *.aux
 *.pdf
+
+#Haskell
+*.o
+*.hi
