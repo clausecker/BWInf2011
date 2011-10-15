@@ -66,9 +66,7 @@ Es gibt folgende vier Unterfälle bei der Abarbeitung der Matrix:
     Füge die Zeile zur Ausgabeliste hinzu.
   Der erste Eintrag der Zeile liegt weiter links:
     Nimm einen Eintrag aus e und lege ihn auf die Ausgabe. Wende das Verfahren
-    erneut mit der selben Zeile an.
-  
--}
+    erneut mit der selben Zeile an. -}
 prepareGaussJordan :: RHS rhs => Matrix rhs -> Maybe (Matrix rhs)
 prepareGaussJordan (Matrix m) = finish <$> foldrM go ([],[],length m-1) m where
   finish (a,_,_) = Matrix a
@@ -77,8 +75,7 @@ prepareGaussJordan (Matrix m) = finish <$> foldrM go ([],[],length m-1) m where
     | isFirstCol pos r = Just (r:rs,e,pos-1)
     | otherwise        = go r (e':rs,es,pos-1)
 
-{-
-Das Gauss-Jordan-Verfahren
+{- Der zweite Schritt des Gauss-Jordan-Verfahrens
 
 Der Algorithmus führt eine rechtsseitige Faltung des Arrays aus. Am Ende
 entsteht eine Liste von Lösungen, wobei gilt result !! n == s_n.
@@ -86,15 +83,51 @@ entsteht eine Liste von Lösungen, wobei gilt result !! n == s_n.
 Die Implementierung setzt das Verfahren recht direkt um, wobei besondere
 Maßnahmen getroffen wurden, um auch für singuläre Matrizen Ausgabe zu erzeugen.
 Speziell wird in einem solchen Fall die rechte Seite der Gleichung in Leerzeilen
-durch entweder 0 oder 1 ersetzt. Die überliegende Alternative-Schicht macht es
+durch entweder 0 oder 1 ersetzt. Die überliegende MonadPlus-Schicht macht es
 möglich, entweder alle oder nur eine Lösung zu erhalten.
 -}
-gaussJordan :: (Monad m, Alternative m, RHS rhs) => Matrix rhs -> m [rhs]
-gaussJordan (Matrix m) = fst <$> foldrM go ([],length m) m where
-  go row (rs,pos) | rowEmpty row = ((<|>) `on` pure) (r0:rs,pos-1) (r1:rs,pos-1)
-                  | otherwise    = pure (rhs':rs,pos-1) where
+gaussJordan2 :: (MonadPlus m, Functor m, RHS rhs) => Matrix rhs -> m [rhs]
+gaussJordan2 (Matrix m) = fst <$> foldrM go ([],length m) m where
+  go row (rs,pos) | rowEmpty row = forkVar
+                  | otherwise    = return (rhs':rs,pos-1) where
     (r0,r1) = bothRHS
     rhs'    = getRHS . foldr (uncurry insertVar) row $ zip [pos..] rs
+    forkVar = (mplus `on` return) (r0:rs,pos-1) (r1:rs,pos-1)
+
+{- Das Gauss-Jordan-Verfahren
+
+Dieser Algorithmus erhält als Parameter eine durch gaussianElimination
+vorbehandelte Matrix. Diese wird dann mit Hilfe des Gauß-Jordan-Verfahrens
+in eine Einheitsmatrix überführt. Da diese immer gleich und daher redundant ist,
+ist die Ausgabe der Vektor A' dargestellt als Liste. Im Falle einer singulären
+Eingabematrix kann es keine oder mehrere Lösungen geben. Daher ist das Ergebnis
+in einen Container der Typklasse MonadPlus verpackt, der dies erlaubt. Man kann
+für den Container wahlweise Maybe (ein oder kein Ergebnis) oder [] (alle
+Ergebnisse) wählen.
+
+Implementation:
+
+ * Im Wesentlichen eine Verbindung von prepareGaussJordan und gaussJordan2
+
+ * Leere Zeilen werden ignoriert, haben aber einen Einfluss auf die Anzahl der
+   Lösungen. (dies wird durch guard erzielt). Dadurch entfällt ein Akkumulator
+
+ * Im Falle eines Sprungs in der Treppe werden entsprechend viele Lösungen
+   erzeugt. Weil die Leerzeilen am Ende der Matrix sind, ist die Gültigkeit der
+   Lösung immernoch sichergestellt.
+-}
+gaussJordan :: (Functor m, MonadPlus m, RHS rhs) => Matrix rhs -> m [rhs]
+gaussJordan (Matrix m) = fst <$> foldrM go ([],length m-1) m where
+  go r (rs,pos) | rowEmpty r       = (rs,pos) <$ (guard . isZero . getRHS) r
+                | isFirstCol pos r = return (r':rs,pos-1)
+                | otherwise        = forkVar >>= go r where
+    (r0,r1) = bothRHS
+    forkVar = (mplus `on` return) (r0:rs,pos-1) (r1:rs,pos-1)
+    r'      = getRHS . foldr (uncurry insertVar) r $ zip [pos+1..] rs
+
+-- Prüft ob eine Matrix in Stufenform eine Determinante von 1 hat.
+hasUniqueSolution :: Matrix rhs -> Bool
+hasUniqueSolution (Matrix m) = and $ zipWith columnSet [0..] m
 
 -- TEST TEST TEST
 
