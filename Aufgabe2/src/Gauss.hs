@@ -3,6 +3,9 @@ module Gauss where
 
 import Control.Applicative
 import Control.Monad
+
+import Data.Foldable (foldrM)
+import Data.Function
 import Data.List
 
 import Matrix
@@ -33,7 +36,7 @@ Hinweise zur Implementation:
 
 -}
 gaussianElemination :: RHS rhs => Matrix rhs -> Matrix rhs
-gaussianElemination (Matrix m) = Matrix $ go 0 m where
+gaussianElemination (Matrix ma) = Matrix $ go 0 ma where
   go n m = case m1 of
       [] | all rowEmpty m0 -> m
          | otherwise       -> go (n+1) m
@@ -67,13 +70,31 @@ Es gibt folgende vier Unterfälle bei der Abarbeitung der Matrix:
   
 -}
 prepareGaussJordan :: RHS rhs => Matrix rhs -> Maybe (Matrix rhs)
-prepareGaussJordan (Matrix m) = finish <$> foldr ((=<<) . go) init m where
+prepareGaussJordan (Matrix m) = finish <$> foldrM go ([],[],length m-1) m where
   finish (a,_,_) = Matrix a
-  init = Just ([],[],length m-1)
   go r (rs,e@ ~(e':es),pos)
     | rowEmpty r       = (rs,r:e,pos) <$ (guard . isZero . getRHS) r
     | isFirstCol pos r = Just (r:rs,e,pos-1)
     | otherwise        = go r (e':rs,es,pos-1)
+
+{-
+Das Gauss-Jordan-Verfahren
+
+Der Algorithmus führt eine rechtsseitige Faltung des Arrays aus. Am Ende
+entsteht eine Liste von Lösungen, wobei gilt result !! n == s_n.
+
+Die Implementierung setzt das Verfahren recht direkt um, wobei besondere
+Maßnahmen getroffen wurden, um auch für singuläre Matrizen Ausgabe zu erzeugen.
+Speziell wird in einem solchen Fall die rechte Seite der Gleichung in Leerzeilen
+durch entweder 0 oder 1 ersetzt. Die überliegende Alternative-Schicht macht es
+möglich, entweder alle oder nur eine Lösung zu erhalten.
+-}
+gaussJordan :: (Monad m, Alternative m, RHS rhs) => Matrix rhs -> m [rhs]
+gaussJordan (Matrix m) = fst <$> foldrM go ([],length m) m where
+  go row (rs,pos) | rowEmpty row = ((<|>) `on` pure) (r0:rs,pos-1) (r1:rs,pos-1)
+                  | otherwise    = pure (rhs':rs,pos-1) where
+    (r0,r1) = bothRHS
+    rhs'    = getRHS . foldr (uncurry insertVar) row $ zip [pos..] rs
 
 -- TEST TEST TEST
 

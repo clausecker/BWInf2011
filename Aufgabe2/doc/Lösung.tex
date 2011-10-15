@@ -117,15 +117,14 @@ Produkt der Werte in der Hauptdiagonale, ungleich $0$ ist, dann existiert genau
 eine Lösung. Wenn nicht, dann existiert entweder keine oder höchstens so viele
 verschiedene Lösungen, wie Nullen in der Diagonale vorhanden sind.
 
-Für den ersten Fall kann man mit dem \emph{Gauß-Jordan-Verfahren} die einzelnen
-Lösungen berechnen. Im zweiten Fall transformieren wir die Matrix so, dass die
-Zeilen, die komplett leer sind die Untersten sind. Dies muss möglich sein,
-weil durch die Stufenform in jeder folgenden Zeile mindestens ein Eintrag
-weniger als in der überstehenden stehen muss. Weil die Matrix quadratisch ist,
-muss für den Fall, dass die Differenz der Anzahl relevanter Einträge zweier
-aufeinander folgender Zeilen größer als $1$ ist, mindestens eine Leerzeile 
-(Zeile der Form $(0\ 0\ \dots\ 0\,|\,0)$) am Ende stehen. Eine derartig
-transformierte Matrix mit Determinante $0$ ist in (\ref{echelonZero}) zu sehen:
+Wenn die Determinante $0$ beträgt, dann befinden sich am Ende der Matrix ein-
+oder mehrere Leerzeile (Zeile der Form $(0\ 0\ \dots\ 0\,|\,\dots)$). Dies muss
+so sein,weil durch die Stufenform in jeder folgenden Zeile mindestens ein
+Eintrag weniger als in der überstehenden stehen muss. Weil die Matrix
+quadratisch ist, muss für den Fall, dass die Differenz der Anzahl relevanter
+Einträge zweier aufeinander folgender Zeilen größer als $1$ ist, mindestens eine
+Leerzeile am Ende stehen. Eine derartig transformierte Matrix mit Determinante
+$0$ ist in (\ref{echelonZero}) zu sehen:
 \begin{equation}
 \left(\begin{array}{cccccc|c}
   1&0&0&0&1&0&1\\
