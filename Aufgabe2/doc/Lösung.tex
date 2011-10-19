@@ -6,6 +6,7 @@
 \usepackage{amsfonts}
 \usepackage{ngerman}
 \usepackage{verbatim}
+\usepackage{url}
 
 \title{Lösung der Aufgabe~2}
 \subtitle{des 30.~Bundeswettbewerbs Informatik}
@@ -326,4 +327,36 @@ gelten. Diese Matrixmultiplikation lässt sich effizient berechnen, indem man f�
 jeder Zeile $n$ von $M$ genau die Zeilen $k$ in $M'$ addiert, für die $v_{n,k}
 =1$ ist.
 
+\section{Erzeugung zufälliger brauchbarer Schaltungen}
+
+Dieser Teil der Aufgabenstellung ist recht eindeutig. Wir haben die Erzeugung
+implementiert, indem wir mit Hilfe eines Zufallszahlengenerators Matrizen der
+gewünschten Größe befüllt und anschließend auf Lösbarkeit getestet haben. Viel
+interessanter als dieser Vorgang an sich ist hingegen die Analyse der Effizienz:
+Wie viele Matrizen einer Größe $n\times n$ muss man im Mittel generieren,
+bis man eine brauchbare gefunden hat?
+
+Die Antwort auf diese Frage ist nicht trivial. Zuerst ist es nötig, die
+Wahrscheinlichkeit der Lösbarkeit einer zufällig gewählten Matrix bestimmter
+Größe zu bestimmen. Eine Recherche im Internet zeigt, dass dieses Problem von
+anderen Mathematikern bereits behandelt wurde.\footnote{Vgl. Gabe Cunningham,
+\url{http://www-math.mit.edu/~dav/genlin.pdf}} Die Anzahl der Matrizen der Größe
+$n\times n$ beträgt $2^{n^2}$, die Anzahl der lösbaren (also nicht-singulären)
+Matrizen ist nach obrigem Dokument $\prod_{k=0}^{n-1}(2^n-2^k)$. Die
+Wahrscheinlichkeit, dass eine zufällig gewählte Matrix der Größe $n\times n$
+lösbar ist, beträgt demnach.
+\begin{equation}
+\prod\limits_{k=0}^{n-1}(2^n-2^k)\bigg/2^{n^2}=
+\prod_{k=0}^{n-1}\frac{2^n-2^k}{2^n}=
+\prod_{k=0}^{n-1}(1-2^{-k}).
+\end{equation}
+
+Betrachtet man die Werte von $\prod_{k=0}^{n-1}(1-2^{-k})$ für verschiedene $n$,
+so scheint sie für $n\to\infty$ gegen einen Wert etwas größer als $\frac14$ zu
+konvergieren:
+\begin{equation}
+\lim_{n\to\infty}\prod_{k=0}^{n-1}(1-2^{-k})\approx 0{,}288788.
+\end{equation}
+
+%TODO: Finish
 \end{document}
