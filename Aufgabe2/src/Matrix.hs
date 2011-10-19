@@ -5,6 +5,7 @@ module Matrix (
     (+=+),
     augmentRHS,
     columnSet,
+    fromList,
     getRHS,
     insertVar,
     isFirstCol,
@@ -32,7 +33,7 @@ insertVar n ins row@(MatrixRow lhs rhs)
   | otherwise     = row
 
 -- Fügt eine Einheitsmatrix auf der rechten Seite hinzu
-augmentRHS :: Matrix () -> Matrix Integer
+augmentRHS :: Matrix rhs -> Matrix Integer
 augmentRHS (Matrix m) = Matrix $ go m 0 where
   go [] !_ = []
   go (MatrixRow lhs _ : xs) n = (MatrixRow lhs $ bit n) : go xs (n + 1)
@@ -56,6 +57,11 @@ getRHS (MatrixRow _ rhs) = rhs
 -- liefert eine Zeile, in der Spalte n gesetzt ist und mit gegebener RHS.
 makeRow :: Int -> rhs -> MatrixRow rhs
 makeRow n rhs = MatrixRow (bit n) rhs
+
+-- Erstellt eine Matrix aus einer Liste von Integern
+fromList :: [Integer] -> Matrix ()
+fromList = Matrix . map (flip MatrixRow ())
+
 --------
 -- Hilfsfunktionen
 --------
