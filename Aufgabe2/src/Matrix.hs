@@ -1,6 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 module Matrix (
-    Matrix (..),
+    Matrix,
     MatrixRow (),
     (+=+),
     augmentRHS,
@@ -19,7 +19,7 @@ import Data.Bits
 data MatrixRow rhs = MatrixRow !Integer !rhs
 
 -- Eine Darstellung als Liste ist für unsere Zwecke vollkommen ausreichend.
-newtype Matrix rhs = Matrix [MatrixRow rhs]
+type Matrix rhs = [MatrixRow rhs]
 
 -- Addiert zwei Reihen einer Matrix
 (+=+) :: RHS rhs => MatrixRow rhs -> MatrixRow rhs -> MatrixRow rhs
@@ -34,9 +34,9 @@ insertVar n ins row@(MatrixRow lhs rhs)
 
 -- Fügt eine Einheitsmatrix auf der rechten Seite hinzu
 augmentRHS :: Matrix rhs -> Matrix Integer
-augmentRHS (Matrix m) = Matrix $ go m 0 where
-  go [] !_ = []
-  go (MatrixRow lhs _ : xs) n = (MatrixRow lhs $ bit n) : go xs (n + 1)
+augmentRHS = go 0 where
+  go !_ [] = []
+  go  n (MatrixRow lhs _ : xs) = (MatrixRow lhs $ bit n) : go (n + 1) xs
 
 -- Ist Spalte n gesetzt?
 columnSet :: Int -> MatrixRow rhs -> Bool
@@ -60,25 +60,32 @@ makeRow n rhs = MatrixRow (bit n) rhs
 
 -- Erstellt eine Matrix aus einer Liste von Integern
 fromList :: [Integer] -> Matrix ()
-fromList = Matrix . map (flip MatrixRow ())
+fromList = map (flip MatrixRow ())
 
 --------
 -- Hilfsfunktionen
 --------
 
-instance RHS rhs => Show (Matrix rhs) where
-  show (Matrix m) = unlines (map showRow m) where
+instance RHS rhs => Show (MatrixRow rhs) where
+  showList m rst = unlines (map showRow m) ++ rst where
     size                    = length m
     showRow (MatrixRow l r) = tail $ showIntegerLen size l ++ showRHS size r
 
+  show (MatrixRow l r) = lhs ++ showRHS len r where
+    go n 0 acc = (init acc,n)
+    go n k acc | even k    = go (n+1) (k `div` 2) (acc ++ "0 ")
+               | otherwise = go (n+1) (k `div` 2) (acc ++ "1 ")
+    (lhs,len) = go 0 l " "
+
+
 -- Lesen nach dem Prinzip GIGO, d.h. "garbage in, garbage out"
-instance RHS rhs => Read (Matrix rhs) where
-  readsPrec _ str = [(Matrix $ map step2 step1,"")] where
-    -- In Wörter zerlegen, in Matrix und Ergebnis aufteilen.
-    step1           = map (break (== "|") . words) $ lines str
-    step2 (lhs,rhs) = MatrixRow lhs' rhs' where
-      rhs' = readRHS rhs
-      lhs' = foldr1 (\a b -> a + 2*b) $ map read lhs
+instance RHS rhs => Read (MatrixRow rhs) where
+  readList str = [(map read $ lines str,"")]
+
+  readsPrec _ str = [(MatrixRow lhs' rhs',"")] where
+    (lhs,rhs) = break (== "|") $ words str
+    rhs'      = readRHS rhs
+    lhs'      = foldr1 (\a b -> a + 2*b) $ map read lhs
 
 -- | Darstellung der rechten Seite der Gleichung; dies ist im Wesentlichen eine
 -- Zeile von A. Um Duplizierungen von Quelltext zu vermeiden, verwenden wir
@@ -133,5 +140,5 @@ instance RHS Integer where
 -- Am wenigsten signifikante Stelle zuerst.
 showIntegerLen :: Int -> Integer -> String
 showIntegerLen 0 !_ = ""
-showIntegerLen n  x | even x = " 0" ++ showIntegerLen (n-1) (x `div` 2)
-                    | odd  x = " 1" ++ showIntegerLen (n-1) (x `div` 2)
+showIntegerLen n  x | even x    = " 0" ++ showIntegerLen (n-1) (x `div` 2)
+                    | otherwise = " 1" ++ showIntegerLen (n-1) (x `div` 2)

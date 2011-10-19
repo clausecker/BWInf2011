@@ -36,7 +36,7 @@ Hinweise zur Implementation:
 
 -}
 gaussianElemination :: RHS rhs => Matrix rhs -> Matrix rhs
-gaussianElemination (Matrix ma) = Matrix $ go 0 ma where
+gaussianElemination = go 0 where
   go n m = case m1 of
       [] | all rowEmpty m0 -> m
          | otherwise       -> go (n+1) m
@@ -68,8 +68,8 @@ Es gibt folgende vier Unterfälle bei der Abarbeitung der Matrix:
     Nimm einen Eintrag aus e und lege ihn auf die Ausgabe. Wende das Verfahren
     erneut mit der selben Zeile an. -}
 prepareGaussJordan :: RHS rhs => Matrix rhs -> Maybe (Matrix rhs)
-prepareGaussJordan (Matrix m) = finish <$> foldrM go ([],[],length m-1) m where
-  finish (a,_,_) = Matrix a
+prepareGaussJordan m = finish <$> foldrM go ([],[],length m-1) m where
+  finish (a,_,_) = a
   go r (rs,e@ ~(e':es),pos)
     | rowEmpty r       = (rs,r:e,pos) <$ (guard . isZero . getRHS) r
     | isFirstCol pos r = Just (r:rs,e,pos-1)
@@ -87,7 +87,7 @@ durch entweder 0 oder 1 ersetzt. Die überliegende MonadPlus-Schicht macht es
 möglich, entweder alle oder nur eine Lösung zu erhalten.
 -}
 gaussJordan2 :: (MonadPlus m, Functor m, RHS rhs) => Matrix rhs -> m [rhs]
-gaussJordan2 (Matrix m) = fst <$> foldrM go ([],length m) m where
+gaussJordan2 m = fst <$> foldrM go ([],length m) m where
   go row (rs,pos) | rowEmpty row = forkVar
                   | otherwise    = return (rhs':rs,pos-1) where
     (r0,r1) = bothRHS
@@ -117,7 +117,7 @@ Implementation:
    Lösung immernoch sichergestellt.
 -}
 gaussJordan :: (Functor m, MonadPlus m, RHS rhs) => Matrix rhs -> m [rhs]
-gaussJordan (Matrix m) = fst <$> foldrM go ([],length m-1) m where
+gaussJordan m = fst <$> foldrM go ([],length m-1) m where
   go r (rs,pos) | rowEmpty r       = (rs,pos) <$ (guard . isZero . getRHS) r
                 | isFirstCol pos r = return (r':rs,pos-1)
                 | otherwise        = forkVar >>= go r where
@@ -127,7 +127,7 @@ gaussJordan (Matrix m) = fst <$> foldrM go ([],length m-1) m where
 
 -- Prüft ob eine Matrix in Stufenform eine Determinante von 1 hat.
 hasUniqueSolution :: Matrix rhs -> Bool
-hasUniqueSolution (Matrix m) = and $ zipWith columnSet [0..] m
+hasUniqueSolution = and . zipWith columnSet [0..]
 
 -- TEST TEST TEST
 
