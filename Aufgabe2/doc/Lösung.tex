@@ -215,7 +215,7 @@ zweiten Schaltung im Aufgabenblatt. Ihre Koeffizientenmatrix $M$ ist
   0&0&0&1&0&0&1&1&0\\
   0&0&0&0&1&0&1&1&1\\
   0&0&0&0&0&1&0&1&1
-\end{pmatrix}.
+\end{pmatrix}\label{m9}
 \end{equation}
 Nach Anwendung des Gaußschen Eliminationsverfahrens ergibt sich die
 Stufenmatrix
@@ -289,5 +289,41 @@ $1$, die zur jeweiligen Zeile gehören -- dies ist die Einheitsmatrix. Am Ende
 ist hingegen die linke Matrix eine Einheitsmatrix. Schreibt man dies wiederum
 als Gleichungssystem, so ist die linke Matrix die rechte Seite von
 (\ref{transposedSys}) und umgekehrt.
+
+Wendet man diese Variante des Gauß-Jordan-Verfahrens auf die Matrix (\ref{m9})
+an, dann entsteht am Ende folgende Matrix auf der rechten Seite:
+\begin{equation}
+\begin{pmatrix}
+  1&0&1&0&0&1&1&1&0\\
+  1&1&1&1&1&1&0&0&0\\
+  1&0&1&1&0&0&0&1&1\\
+  1&1&0&1&1&0&1&1&0\\
+  1&0&1&0&1&0&1&0&1\\
+  0&1&1&0&1&1&0&1&1\\
+  1&1&0&0&0&1&1&0&1\\
+  0&0&0&1&1&1&1&1&1\\
+  0&1&1&1&0&0&1&0&1
+\end{pmatrix}.
+\end{equation}
+Die Koeffizienten obenstehender Matrix kann man jetzt einfach nach dem in (\ref
+{transposedSys}) angegebenen Schema in ein allgemeines Lösungsschema für die
+zweite Schaltung im Aufgabenblatt einsetzen. Um die Richtigkeit des
+Lösungsschemas nachzuweisen kann man außerdem eine Probe durchführen. Dafür
+setzt man für alle $s_n$ im ursprünglichen Gleichungssystem die entsprechenden
+Zeilen aus $M'$ ein. Da man nach der Einsetzung sowohl links als auch rechts
+Terme in $l_n$ hat, muss bei einer korrekt invertierten Matrix zwangsläufig die
+Einheitsmatrix auf der linken Seite entstehen.
+
+Es ist leicht zu erkennen, dass diese Operation gerade die Matrixmultiplikation
+ist. Als alternative Interpretation des oben beschriebenen erweiterten
+Gauß-Jordan-Verfahrens kann man sagen, dass mit $M'$ die inverse Matrix zu $M$
+berechnet wird. Sei $E$ die Einheitsmatrix der selben Größe wie $M$ und $M'$.
+Dann muss für eine korrekt aus $M$ berechnete inverse Matrix $M'$
+\begin{equation}
+M\cdot M' = E
+\end{equation}
+gelten. Diese Matrixmultiplikation lässt sich effizient berechnen, indem man für
+jeder Zeile $n$ von $M$ genau die Zeilen $k$ in $M'$ addiert, für die $v_{n,k}
+=1$ ist.
 
 \end{document}
