@@ -2,6 +2,7 @@
 
 \usepackage[biolinum]{libertine}
 \usepackage[euler-digits,small]{eulervm}
+
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{ngerman}
@@ -23,8 +24,8 @@
 
 \section*{Vorbemerkungen}
 Im Folgenden bezeichne $0$ den logischen Wert \emph{falsch} und $1$ den
-logischen Wert \emph{wahr}. $a\land b$ ist die logische und-Verknüpfung von $a$
-und $b$, $a\xor b$ ist analog die XOR-Verknüpfung. Insbesondere gilt:
+logischen Wert \emph{wahr}. $a\land b$ sei die Konjunktion (and) von $a$
+und $b$, $a\xor b$ sei analog die Kontravalenz (xor). Insbesondere gilt:
 $a\xor b=a+b\mod 2$ und $a\land b=a\cdot b\mod 2$.
 
 Die Implementationen der beschriebenen Algorithmen finden sich im Anhang.
@@ -343,20 +344,44 @@ anderen Mathematikern bereits behandelt wurde.\footnote{Vgl. Gabe Cunningham,
 \url{http://www-math.mit.edu/~dav/genlin.pdf}} Die Anzahl der Matrizen der Größe
 $n\times n$ beträgt $2^{n^2}$, die Anzahl der lösbaren (also nicht-singulären)
 Matrizen ist nach obrigem Dokument $\prod_{k=0}^{n-1}(2^n-2^k)$. Die
-Wahrscheinlichkeit, dass eine zufällig gewählte Matrix der Größe $n\times n$
-lösbar ist, beträgt demnach.
+Wahrscheinlichkeit $p_n$, dass eine zufällig gewählte Matrix der Größe
+$n\times n$ lösbar ist, beträgt demnach
 \begin{equation}
-\prod\limits_{k=0}^{n-1}(2^n-2^k)\bigg/2^{n^2}=
+p_n=
+2^{-n^2}\prod\limits_{k=0}^{n-1}(2^n-2^k)=
 \prod_{k=0}^{n-1}\frac{2^n-2^k}{2^n}=
 \prod_{k=0}^{n-1}(1-2^{-k}).
 \end{equation}
 
-Betrachtet man die Werte von $\prod_{k=0}^{n-1}(1-2^{-k})$ für verschiedene $n$,
-so scheint sie für $n\to\infty$ gegen einen Wert etwas größer als $\frac14$ zu
-konvergieren:
+Betrachtet man die Werte von $\prod_{k=0}^{n-1}(1-2^{-k})$ für verschiedene
+$n$, so scheint der Term für $n\to\infty$ gegen einen Wert etwas größer als
+$\frac27$ zu konvergieren:
 \begin{equation}
-\lim_{n\to\infty}\prod_{k=0}^{n-1}(1-2^{-k})\approx 0{,}288788.
+p_\infty=\lim_{n\to\infty}\prod_{k=0}^{n-1}(1-2^{-k})\approx 0{,}288788
 \end{equation}
 
-%TODO: Finish
+Dies zu zeigen ist nicht schwer: Offensichtlichtlich ist $p_n$ streng monoton
+fallend, da bei Inkrementierung von $n$ das Produkt um einen Faktor
+$0<1-2^{-k}<1$ erweitert wird. Andererseits ist das Produkt nach unten
+beschränkt, da es nie negativ wird. Da jede streng monoton fallende, nach unten
+beschränkte Folge konvergiert, muss auch $p(n)$ konvergieren.
+
+Sei $A_n$ nun die Anzahl der Zufallsmatrizen der Größe $n\times n$, die man im
+Mittel erzeugen muss, bis man eine lösbare erhält. Man kann zwei Fälle
+unterscheiden: Mit einer Wahrscheinlichkeit von $p_n$ braucht man nur einen
+Versuch. In allen anderen Fällen braucht man hingegen genau einen Versuch mehr
+als im Mittel, weil $A$ nicht von der Anzahl der Versuche an sich abhängt. Es
+ist somit $A_n=A_np_n+(A_n+1)(1-p_n)$. Umformung nach $A_n$ ergibt die
+einfache Form
+\begin{equation}
+A_n=p_n^{-1}.
+\end{equation}
+Da $p_n$ streng monoton fallend ist, ist $A_n$ dann am größten, wenn $n$ gegen
+Unendlich geht. Somit ist
+\begin{equation}
+\max A_n = A_\infty = p_\infty^{-1} \approx 3{,}46274.
+\end{equation}
+Man braucht also im Mittel cirka $3{,}5$ Versuche, bis man eine lösbare Matrix
+gefunden hat.
+
 \end{document}
