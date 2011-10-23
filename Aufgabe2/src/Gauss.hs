@@ -1,5 +1,10 @@
 {-# LANGUAGE BangPatterns #-}
-module Gauss where
+module Gauss (
+  gaussianElimination,
+  gaussJordan,
+  hasUniqueSolution,
+  completeGJ
+) where
 
 import Control.Applicative
 import Control.Monad
@@ -35,8 +40,8 @@ Hinweise zur Implementation:
   Ansonsten wird n erhöht und der Algorithmus nochmal durchgeführt.
 
 -}
-gaussianElemination :: RHS rhs => Matrix rhs -> Matrix rhs
-gaussianElemination = go 0 where
+gaussianElimination :: RHS rhs => Matrix rhs -> Matrix rhs
+gaussianElimination = go 0 where
   go n m = case m1 of
       [] | all rowEmpty m0 -> m
          | otherwise       -> go (n+1) m
@@ -67,8 +72,8 @@ Es gibt folgende vier Unterfälle bei der Abarbeitung der Matrix:
   Der erste Eintrag der Zeile liegt weiter links:
     Nimm einen Eintrag aus e und lege ihn auf die Ausgabe. Wende das Verfahren
     erneut mit der selben Zeile an. -}
-prepareGaussJordan :: RHS rhs => Matrix rhs -> Maybe (Matrix rhs)
-prepareGaussJordan m = finish <$> foldrM go ([],[],length m-1) m where
+_prepareGJ :: RHS rhs => Matrix rhs -> Maybe (Matrix rhs)
+_prepareGJ m = finish <$> foldrM go ([],[],length m-1) m where
   finish (a,_,_) = a
   go r (rs,e@ ~(e':es),pos)
     | rowEmpty r       = (rs,r:e,pos) <$ (guard . isZero . getRHS) r
@@ -86,8 +91,8 @@ Speziell wird in einem solchen Fall die rechte Seite der Gleichung in Leerzeilen
 durch entweder 0 oder 1 ersetzt. Die überliegende MonadPlus-Schicht macht es
 möglich, entweder alle oder nur eine Lösung zu erhalten.
 -}
-gaussJordan2 :: (MonadPlus m, Functor m, RHS rhs) => Matrix rhs -> m [rhs]
-gaussJordan2 m = fst <$> foldrM go ([],length m) m where
+_finishGJ :: (MonadPlus m, Functor m, RHS rhs) => Matrix rhs -> m [rhs]
+_finishGJ m = fst <$> foldrM go ([],length m) m where
   go row (rs,pos) | rowEmpty row = forkVar
                   | otherwise    = return (rhs':rs,pos-1) where
     (r0,r1) = bothRHS
@@ -107,7 +112,7 @@ Ergebnisse) wählen.
 
 Implementation:
 
- * Im Wesentlichen eine Verbindung von prepareGaussJordan und gaussJordan2
+ * Im Wesentlichen eine Verbindung von _prepareGJ und _finishGJ
 
  * Leere Zeilen werden ignoriert, haben aber einen Einfluss auf die Anzahl der
    Lösungen. (dies wird durch guard erzielt). Dadurch entfällt ein Akkumulator
@@ -129,41 +134,7 @@ gaussJordan m = fst <$> foldrM go ([],length m-1) m where
 hasUniqueSolution :: Matrix rhs -> Bool
 hasUniqueSolution = and . zipWith columnSet [0..]
 
--- TEST TEST TEST
-
-m7  :: Matrix Bool
--- m7: Erste Beispielmatrix
-m7 = read
-  "1 1 0 0 0 0 1 | 0\n\
-  \1 1 1 0 0 0 0 | 0\n\
-  \0 1 1 1 0 0 0 | 1\n\
-  \0 0 1 1 1 0 0 | 0\n\
-  \0 0 0 1 1 1 0 | 1\n\
-  \0 0 0 0 1 1 1 | 0\n\
-  \1 0 0 0 0 1 1 | 1"
-
--- m9: Zweite Beispielmatrix
-m9 :: Matrix ()
-m9 = read
-  "1 1 0 1 0 0 0 0 0\n\
-  \1 1 1 0 1 0 0 0 0\n\
-  \0 1 1 0 0 1 0 0 0\n\
-  \1 0 0 1 1 0 1 0 0\n\
-  \1 0 1 0 1 0 1 0 1\n\
-  \0 0 1 0 1 1 0 0 1\n\
-  \0 0 0 1 0 0 1 1 0\n\
-  \0 0 0 0 1 0 1 1 1\n\
-  \0 0 0 0 0 1 0 1 1"
-
--- mx: Matrix mit zwei Leerzeilen
-mx :: Matrix Bool
-mx = read
-  "1 0 0 0 1 1 0 0 0 | 0\n\
-  \1 1 1 0 1 0 0 0 0 | 0\n\
-  \0 1 1 0 0 1 0 0 0 | 0\n\
-  \1 0 1 0 1 0 1 0 1 | 0\n\
-  \1 0 1 0 1 0 1 0 1 | 0\n\
-  \0 0 1 0 1 1 0 0 1 | 0\n\
-  \0 0 0 1 0 0 1 1 0 | 0\n\
-  \0 0 0 0 1 0 1 1 1 | 0\n\
-  \0 0 0 0 0 1 0 1 1 | 0"
+-- Wendet das komplette Gauss-Jordan-Verfahren auf eine Matrix an und gibt das
+-- Resultat aus. Wenn keine Lösung verfügbar, dann Nothing.
+completeGJ :: Matrix a -> Maybe (Matrix ())
+completeGJ = fmap fromList . gaussJordan . gaussianElimination . augmentRHS
