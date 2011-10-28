@@ -1,4 +1,9 @@
-module Generation where
+module Generation (
+  randomMatrix,
+  solvableRandom,
+  stateToIO,
+  detState
+) where
 
 import Matrix
 import Gauss
@@ -6,17 +11,27 @@ import Gauss
 import Control.Applicative
 import Control.Monad
 import Control.Monad.State.Strict
-import Data.Bits
 import System.Random
 
 -- Erzeugt eine zufällige Matrixzeile der Länge l
-randomRowS :: RandomGen g => Int -> State g (MatrixRow ())
-randomRowS l = flip MatrixRow () <$> state (randomR (0,2^l-1))
+randomRow :: RandomGen g => Int -> State g (MatrixRow ())
+randomRow l = flip MatrixRow () <$> state (randomR (0,2^l-1))
 
 -- Erzeugt eine zufällige Matrix der Größe l x l
-randomMatrixS :: RandomGen g => Int -> State g (Matrix ())
-randomMatrixS = replicateM <*> randomRowS
+randomMatrix :: RandomGen g => Int -> State g (Matrix ())
+randomMatrix = replicateM <*> randomRow
 
--- Das gleiche mit IO
-randomMatrixIO :: Int -> IO (Matrix ())
-randomMatrixIO l = evalState (randomMatrixS l) <$> newStdGen
+-- Erzeugt eine zufällige, lösbare Matrix.
+solvableRandom :: RandomGen g => Int -> State g (Matrix ())
+solvableRandom i = do m <- randomMatrix i
+                      if hasUniqueSolution $ gaussianElimination m
+                         then return m
+                         else solvableRandom i
+
+-- Macht aus einem solchen State-Transformer eine IO-Funktion
+stateToIO :: State StdGen a -> IO a
+stateToIO action = evalState action <$> newStdGen
+
+-- Verwendung eines deterministischen Generators
+detState :: State StdGen a -> Int -> a
+detState action seed = evalState action $ mkStdGen seed
