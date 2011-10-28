@@ -6,3 +6,7 @@
 #Haskell
 *.o
 *.hi
+
+#Ausgabe
+Aufgabe2/Aufgabe2
+Aufgabe2/dist
