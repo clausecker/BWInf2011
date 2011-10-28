@@ -16,8 +16,10 @@
 
 % Syntaxdefinitionen
 \newcommand{\ftwo}{\ensuremath{\mathbb F_2}}
-\newcommand{\bigO}{O}
+\DeclareMathOperator{\bigO}{O}
 \newcommand{\xor}{\oplus}
+\def\UrlFont{\it}
+
 \begin{document}
 
 \maketitle
@@ -237,6 +239,7 @@ Stufenmatrix
 deren Determinante $1$ ist. Das Gleichungssystem hat unabhängig von den
 Ausgangszuständen genau eine Lösung, damit ist die Schaltung brauchbar.
 
+\pagebreak
 \section{Bestimmung von Lösungsschemen}
 Ein weiterer Teil der Aufgabenstellung ist es, eine allgemeine Lösungsformel
 für beliebige Ausgangszustände zu finden. Dies ist nur möglich, wenn die
@@ -292,6 +295,7 @@ ist hingegen die linke Matrix eine Einheitsmatrix. Schreibt man dies wiederum
 als Gleichungssystem, so ist die linke Matrix die rechte Seite von
 (\ref{transposedSys}) und umgekehrt.
 
+\pagebreak
 Wendet man diese Variante des Gauß-Jordan-Verfahrens auf die Matrix (\ref{m9})
 an, dann entsteht am Ende folgende Matrix auf der rechten Seite:
 \begin{equation}
@@ -384,4 +388,13 @@ Unendlich geht. Somit ist
 Man braucht also im Mittel cirka $3{,}5$ Versuche, bis man eine lösbare Matrix
 gefunden hat.
 
+Offensichtlich ist $A_n = \bigO(1)$. Da man zurErzeugung einer Matrix $\bigO(n^2
+)$ Zufallsbits erzeugen muss, und das zur Überprüfung auf Lösbarkeit benötigte
+Gaußsche Eliminationsverfahren eine Komplexität von $\bigO(n^3)$ hat, ist die
+Komplexität der zufälligen Erzeugung einer brauchbaren Schaltung im mittleren
+und besten Fall $\bigO(1)\cdot\left(\bigO(n^3)+\bigO(n^2)\right)=\bigO(n^3)$.
+Man kann keine genauere Aussage treffen, weil der Algorithmus randomisiert ist
+und nicht garantiert terminiert. Wenn er allerdings terminiert, dann liefert er
+immer ein korrektes Ergebnis. Es handelt sich also um einen
+\emph{Las-Vegas-Algorithmus}.
 \end{document}

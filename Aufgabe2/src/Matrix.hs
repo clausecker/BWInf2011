@@ -1,7 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
 module Matrix (
     Matrix,
-    MatrixRow (),
+    MatrixRow (..),
     (+=+),
     augmentRHS,
     columnSet,
