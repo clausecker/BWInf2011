@@ -20,7 +20,7 @@ all: Lösung.pdf
 	$(XELATEX) -halt-on-error $< >/dev/null
 
 clean:
-	$(RM) -f *.log *.pdf *.aux *.hs.tex
+	$(RM) -f *.log *.pdf *.aux *.hs.tex definitions.tex
 
 definitions.tex:
 	$(PYGMENTIZE) -S $(STYLE) -f tex > $@

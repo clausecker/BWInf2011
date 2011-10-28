@@ -28,6 +28,12 @@
 \newcommand{\xor}{\oplus}
 \def\UrlFont{\it}
 
+%Für die Listings
+\newcommand{\listSec}[1]{%
+  \subsection*{#1}
+  \input #1.hs.tex
+}
+
 \begin{document}
 
 \maketitle
@@ -422,13 +428,26 @@ lösen:
   Ein- und Ausgabe.
 \end{description}
 
-\newcommand{\listSec}[1]{%
-  \subsection*{#1}
-  \input #1.hs.tex
-}
-
 \listSec{Matrix}
 \listSec{Gauss}
 \listSec{Generation}
 \listSec{Main}
+
+\section{Benutzungshinweise}
+Die Ein- und Ausgabe der Matrizen erfolgt in einem Format, dass an die übliche
+Darstellung angelehnt ist. Die Einträge bestehen aus einzelnen Ziffern, die
+durch Leerzeichen getrennt sind. Sollte es eine Erweiterung der Matrix auf der
+rechten Seite geben, dann steht am linken Rand der eigentlichen Matrix mit
+Leerzeichen getrennt ein Trennstrich (\texttt{|}), anschließend die Erweiterung.
+Die Matrix (\ref{exampleGame}) wird im Ein- und Ausgabeformat z.\,B.
+folgendermaßen dargestellt:
+\begin{Verbatim}
+    1 1 0 0 0 0 1 | 0
+    1 1 1 0 0 0 0 | 0
+    0 1 1 1 0 0 0 | 1
+    0 0 1 1 1 0 0 | 0
+    0 0 0 1 1 1 0 | 1
+    0 0 0 0 1 1 1 | 0
+    1 0 0 0 0 1 1 | 1
+\end{Verbatim}
 \end{document}

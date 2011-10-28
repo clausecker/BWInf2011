@@ -3,7 +3,7 @@
 GHC = ghc -outputdir ../dist
 GHCFLAGS = -O3 -Wall
 
-.PHONY: clean
+.PHONY: clean ../Aufgabe2
 
 all: ../Aufgabe2
 
