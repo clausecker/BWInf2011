@@ -44,7 +44,8 @@ logischen Wert \emph{wahr}. $a\land b$ sei die Konjunktion (and) von $a$
 und $b$, $a\xor b$ sei analog die Kontravalenz (xor). Insbesondere gilt:
 $a\xor b=a+b\mod 2$ und $a\land b=a\cdot b\mod 2$.
 
-Die Implementationen der beschriebenen Algorithmen finden sich im Anhang.
+Die Implementationen der beschriebenen Algorithmen befineden sich in Abschnitt
+\ref{implementation}.
 
 \section{Grundidee}
 Wir betrachten eine Anordnung von Schaltern und Lampen als \emph{lineares
@@ -100,7 +101,7 @@ M=
   v_{2,1}&v_{2,2}&\cdots&v_{2,n}\\
   \vdots &\vdots &\ddots&\vdots\\
   v_{1,n}&v_{2,n}&\cdots&v_{n,n}
-\end{pmatrix}
+\end{pmatrix}\label{Mdef}
 \end{equation}
 und den Spaltenvektor $A$ der Ausgangszustände $l_1$ bis $l_n$ darstellen. Für
 ein effizientes Arbeiten speichern wir jede Zeile von $M$ in ein- oder mehreren
@@ -405,12 +406,15 @@ Offensichtlich ist $A_n=\bigO(1)$. Weil man zur Erzeugung einer Matrix $\bigO(n^
 Gaußsche Eliminationsverfahren eine Komplexität von $\bigO(n^3)$ hat, ist die
 Komplexität der zufälligen Erzeugung einer brauchbaren Schaltung im mittleren
 und besten Fall $\bigO(1)\cdot\left(\bigO(n^3)+\bigO(n^2)\right)=\bigO(n^3)$.
+
 Man kann keine genauere Aussage treffen, weil der Algorithmus randomisiert ist
 und nicht garantiert terminiert. Wenn er allerdings terminiert, dann liefert er
-immer ein korrektes Ergebnis. Es handelt sich also um einen
-\emph{Las-Vegas-Algorithmus}.
+immer ein korrektes Ergebnis. Die Wahrscheinlichkeit, dass der Algorithmus in
+höchstens $n$ Schaltungen eine brauchbare gefunden hat, geht mit $n\to\infty$
+gegen $1$, sodass der Algorithmus fast sicher terminiert. Es handelt sich also
+um einen \emph{Las-Vegas-Algorithmus}.
 
-\section{Implementation}
+\section{Implementation}\label{implementation}
 Es folgt ein vollständiger Abdruck des Quelltextes. Dieser ist in vier Einheiten
 unterteilt worden, die jeweils einen anderen verschiedenen Teil der Aufgabe
 lösen:
@@ -434,20 +438,27 @@ lösen:
 \listSec{Main}
 
 \section{Benutzungshinweise}
-Die Ein- und Ausgabe der Matrizen erfolgt in einem Format, dass an die übliche
-Darstellung angelehnt ist. Die Einträge bestehen aus einzelnen Ziffern, die
-durch Leerzeichen getrennt sind. Sollte es eine Erweiterung der Matrix auf der
-rechten Seite geben, dann steht am linken Rand der eigentlichen Matrix mit
-Leerzeichen getrennt ein Trennstrich (\texttt{|}), anschließend die Erweiterung.
-Die Matrix (\ref{exampleGame}) wird im Ein- und Ausgabeformat z.\,B.
-folgendermaßen dargestellt:
+Die Eingabe von Schaltungen erfolgt in Form der zugehörigen Matrix $M$ nach dem
+in (\ref{Mdef}) angegebenem Schema. Sollte für die gewünschte Funktion noch ein
+Lösungsvektor $A$ erforderlich sein, so wird dieser wie in (\ref{exampleGame})
+durch einen Trennstrich (\texttt{|}) getrennt angegeben. Der Einfachheit halber
+werden die Klammern der Matrix weggelassen. In (\ref{exampleInput}) ist die
+Schaltung aus (\ref{exampleGame}) in Eingabeform angegeben.\label{exampleInput}
 \begin{Verbatim}
-    1 1 0 0 0 0 1 | 0
-    1 1 1 0 0 0 0 | 0
-    0 1 1 1 0 0 0 | 1
-    0 0 1 1 1 0 0 | 0
-    0 0 0 1 1 1 0 | 1
-    0 0 0 0 1 1 1 | 0
-    1 0 0 0 0 1 1 | 1
+1 1 0 0 0 0 1 | 0
+1 1 1 0 0 0 0 | 0
+0 1 1 1 0 0 0 | 1
+0 0 1 1 1 0 0 | 0
+0 0 0 1 1 1 0 | 1
+0 0 0 0 1 1 1 | 0
+1 0 0 0 0 1 1 | 1
 \end{Verbatim}
+
+Die Ausgabe erfolgt (falls anwendbar) im selbem Format wie die Eingabe, aber, je
+nach Funktion, eventuell als Matrix $M'$. Sollte eine Lösung unmöglich sein
+(z.\,B. bei unbrauchbaren Eingabeschaltungen), dann ist die Ausgabe leer. Für
+die Funktion \texttt{usable} erzeugt das Programm als Ausgabe einen
+Wahrheitswert; \texttt{True} oder \texttt{False}. Bei der Funktion \texttt
+{instance} besteht die Ausgabe aus ein- oder mehreren durch Zeilenumbrüche
+getrennten Bitvektoren von $s_1\dots s_n$.
 \end{document}
