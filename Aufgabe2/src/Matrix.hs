@@ -80,7 +80,7 @@ instance RHS rhs => Show (MatrixRow rhs) where
 
 -- Lesen nach dem Prinzip GIGO, d.h. "garbage in, garbage out"
 instance RHS rhs => Read (MatrixRow rhs) where
-  readList str = [(map read $ lines str,"")]
+  readList str = [(map read . filter (not . null) $ lines str,"")]
 
   readsPrec _ str = [(MatrixRow lhs' rhs',"")] where
     (lhs,rhs) = break (== "|") $ words str

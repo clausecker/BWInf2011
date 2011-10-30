@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 GHC = ghc -outputdir ../dist
-GHCFLAGS = -O3 -Wall
+GHCFLAGS = -O3 -Wall -rtsopts
 
 .PHONY: clean ../Aufgabe2
 

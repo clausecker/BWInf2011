@@ -48,57 +48,6 @@ gaussianElimination = go 0 where
       (pivot:m1')          -> pivot : go (n+1) (map (pivot +=+) m1' ++ m0)
     where (m1,m0) = partition (columnSet n) m
 
-{-
-Vorbereitung für das Gauß-Jordan-Verfahren. Dieser Algorithmus verschiebt die
-Leerzeilen derartig, dass sich diese immer in den Zeilen befinden, in denen
-Spalten übersprungen wurden. Wenn die Matrix nicht lösbar ist, wird Nothing
-zurückgegeben. Die Funktion erwartet, dass die Matrix eine Ausgabe von
-gaussianEliminiation ist.
-
-Der Tupel, der foldr übergeben wird, enthält folgendes:
-
-  * Eine Liste der bereits abgearbeiteten Listenelemente (rs)
-  * Eine Liste der Leerzeilen (e) 
-  * Die aktuelle Position innerhalb der Stufenform (pos)
-
-Es gibt folgende vier Unterfälle bei der Abarbeitung der Matrix:
-
-  Die Zeile ist leer und die rechte Seite ist 0:
-    Füge die Zeile zur Liste der Leerzeilen hinzu.
-  Die rechte Seite ist nicht Null:
-    Breche ab. Das Gauss-Jordan-Verfahren ist nicht anwendbar
-  Der erste Eintrag der Zeile liegt auf der Diagonale:
-    Füge die Zeile zur Ausgabeliste hinzu.
-  Der erste Eintrag der Zeile liegt weiter links:
-    Nimm einen Eintrag aus e und lege ihn auf die Ausgabe. Wende das Verfahren
-    erneut mit der selben Zeile an. -}
-_prepareGJ :: RHS rhs => Matrix rhs -> Maybe (Matrix rhs)
-_prepareGJ m = finish <$> foldrM go ([],[],length m-1) m where
-  finish (a,_,_) = a
-  go r (rs,e@ ~(e':es),pos)
-    | rowEmpty r       = (rs,r:e,pos) <$ (guard . isZero . getRHS) r
-    | isFirstCol pos r = Just (r:rs,e,pos-1)
-    | otherwise        = go r (e':rs,es,pos-1)
-
-{- Der zweite Schritt des Gauss-Jordan-Verfahrens
-
-Der Algorithmus führt eine rechtsseitige Faltung des Arrays aus. Am Ende
-entsteht eine Liste von Lösungen, wobei gilt result !! n == s_n.
-
-Die Implementierung setzt das Verfahren recht direkt um, wobei besondere
-Maßnahmen getroffen wurden, um auch für singuläre Matrizen Ausgabe zu erzeugen.
-Speziell wird in einem solchen Fall die rechte Seite der Gleichung in Leerzeilen
-durch entweder 0 oder 1 ersetzt. Die überliegende MonadPlus-Schicht macht es
-möglich, entweder alle oder nur eine Lösung zu erhalten.
--}
-_finishGJ :: (MonadPlus m, Functor m, RHS rhs) => Matrix rhs -> m [rhs]
-_finishGJ m = fst <$> foldrM go ([],length m) m where
-  go row (rs,pos) | rowEmpty row = forkVar
-                  | otherwise    = return (rhs':rs,pos-1) where
-    (r0,r1) = bothRHS
-    rhs'    = getRHS . foldr (uncurry insertVar) row $ zip [pos..] rs
-    forkVar = (mplus `on` return) (r0:rs,pos-1) (r1:rs,pos-1)
-
 {- Das Gauss-Jordan-Verfahren
 
 Dieser Algorithmus erhält als Parameter eine durch gaussianElimination
@@ -112,14 +61,30 @@ Ergebnisse) wählen.
 
 Implementation:
 
- * Im Wesentlichen eine Verbindung von _prepareGJ und _finishGJ
+Wir gehen die Matrix von unten nach oben durch und führen dabei die aktuelle
+Spalte in ihr sowie eine Liste der bereits bekannten Lösungen mit. Angenommen
+ist, dass die Matrix vorher mit der Funktion gaussianElimination in Stufenform
+überführt wurde. In jeder Iteration gibt es die folgenden drei Fälle:
 
- * Leere Zeilen werden ignoriert, haben aber einen Einfluss auf die Anzahl der
-   Lösungen. (dies wird durch guard erzielt). Dadurch entfällt ein Akkumulator
+Zeile ist leer:
+  Prüfe die rechte Seite der Gleichung. Ist sie Null, dann wird einfach mit der
+  nächsten Zeile fortgefahren,ohne die aktuelle Spalte zu verändert. Ist sie
+  nicht Null, dann gibt es keine Lösungen.
 
- * Im Falle eines Sprungs in der Treppe werden entsprechend viele Lösungen
-   erzeugt. Weil die Leerzeilen am Ende der Matrix sind, ist die Gültigkeit der
-   Lösung immernoch sichergestellt.
+Aktuelle Spalte ist die erste gesetzte Spalte in der Zeile:
+  Setzt nacheinander die Lösungen der vorhergehenden Zeilen ein und errechne
+  dadurch die Lösung der aktuellen Spalte. Lege diese auf die Liste der Lösungen
+  und gehe eine Spalte nach links.
+
+ansonsten:
+  Es muss nun eine Spalte links von der aktuellen geben, die gesetzt ist. Da es
+  nun eine nicht eindeutig lösbare Spalte gibt, kann deren Wert zufällig gesetzt
+  werden. Dies wird über eine kreative Verwendung von MonadPlus bewerkstelligt.
+  Nachdem die Lösung auf die Liste gelegt wurde, wird die selbe Zeile, aber mit
+  aktueller Spalte eins weiter links, in die Iterationsfunktion gefüttert.
+
+Am Ende liegen die Lösungen in der richtigen Reihenfolge auf der Lösungsliste.
+Diese wird extrahiert und ausgegeben.
 -}
 gaussJordan :: (Functor m, MonadPlus m, RHS rhs) => Matrix rhs -> m [rhs]
 gaussJordan m = fst <$> foldrM go ([],length m-1) m where
