@@ -4,12 +4,33 @@ import Matrix
 import Gauss
 import Generation
 
+import Control.Monad
+import Data.Maybe
 import System.Environment
 
 main :: IO ()
 main = do args <- getArgs
+          c    <- getContents
+          let matrixVoid = read c :: Matrix ()
+              matrixBool = read c :: Matrix Bool
+              solutionScheme = completeGJ matrixVoid
+              solutions :: (Functor m, MonadPlus m) => m [Bool]
+              solutions = gaussJordan $ gaussianElimination matrixBool
+              mkOutput :: (Functor m, MonadPlus m) => m [Bool] -> m String
+              mkOutput  = fmap (unwords . map (show . fromEnum))
           case args of
+            ["solve"] ->
+              when (isJust solutionScheme) $ print (fromJust solutionScheme)
+
+            ["generate",n] -> stateToIO (solvableRandom $ read n) >>= print
+            ["usable"]     -> print $ hasUniqueSolution $ matrixVoid
+
+            ["instance","all"] -> putStr $ unlines (mkOutput solutions)
+
+            ["instance","any"] ->  putStrLn $ maybe "" id (mkOutput solutions)
+
             _ -> putStr helpString
+
 
 helpString :: String
 helpString =

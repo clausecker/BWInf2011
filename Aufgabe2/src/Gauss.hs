@@ -130,9 +130,9 @@ gaussJordan m = fst <$> foldrM go ([],length m-1) m where
     forkVar = (mplus `on` return) (r0:rs,pos-1) (r1:rs,pos-1)
     r'      = getRHS . foldr (uncurry insertVar) r $ zip [pos+1..] rs
 
--- Prüft ob eine Matrix in Stufenform eine Determinante von 1 hat.
-hasUniqueSolution :: Matrix rhs -> Bool
-hasUniqueSolution = and . zipWith columnSet [0..]
+-- Prüft ob eine Matrix eine Determinante von 1 hat.
+hasUniqueSolution :: RHS rhs => Matrix rhs -> Bool
+hasUniqueSolution = and . zipWith columnSet [0..] . gaussianElimination
 
 -- Wendet das komplette Gauss-Jordan-Verfahren auf eine Matrix an und gibt das
 -- Resultat aus. Wenn keine Lösung verfügbar, dann Nothing.

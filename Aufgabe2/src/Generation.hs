@@ -24,7 +24,7 @@ randomMatrix = replicateM <*> randomRow
 -- Erzeugt eine zufällige, lösbare Matrix.
 solvableRandom :: RandomGen g => Int -> State g (Matrix ())
 solvableRandom i = do m <- randomMatrix i
-                      if hasUniqueSolution $ gaussianElimination m
+                      if hasUniqueSolution m
                          then return m
                          else solvableRandom i
 
