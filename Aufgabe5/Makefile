@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-XELATEX = pdflatex
+XELATEX = xelatex
 STYLE = borland
 PYGMENTIZE = pygmentize
 PYGMENTIZE_OPTS = -O linenos
@@ -29,9 +29,9 @@ clean:
 definitions.tex:
 	$(PYGMENTIZE) -S $(STYLE) -f tex > $@
 
-%.c.tex: /%.c
+%.c.tex: %.c
 	$(PYGMENTIZE) $(PYGMENTIZE_OPTS) -o $@ $<
 
-%.h.tex: /%.h
+%.h.tex: %.h
 	$(PYGMENTIZE) $(PYGMENTIZE_OPTS) -o $@ $<
 

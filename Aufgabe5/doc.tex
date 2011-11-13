@@ -1,11 +1,14 @@
-
 \documentclass{scrartcl}
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
+\usepackage[biolinum]{libertine}
+\usepackage[euler-digits,small]{eulervm}
 
 \usepackage{amsmath}
 \usepackage{amsfonts}
+
+\usepackage{parskip}
+\usepackage{xcolor}
+
 \usepackage[ngerman]{babel}
 \usepackage{alltt}
 \usepackage{fancyvrb}
@@ -13,6 +16,9 @@
 
 \include{definitions}
 
+% Format
+\setlength{\parskip}{0.5em plus0.5em minus0.5em}
+\setlength{\parindent}{1em}
 
 \newcommand{\listSec}[1]{
 	\subsection*{#1}

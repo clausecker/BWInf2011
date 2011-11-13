@@ -3,6 +3,10 @@
 
 #include "def.h"
 
-int process(const struct CITY *cities, bool *partnerships, int num_cities, int num_partnerships);
+int process(
+  const struct CITY *cities,
+  bool *partnerships,
+  int num_cities,
+  int num_partnerships);
 
 #endif
