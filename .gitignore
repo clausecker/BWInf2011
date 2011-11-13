@@ -3,11 +3,12 @@
 *.aux
 *.pdf
 
-#Haskell
+#Objektdateien
 *.o
 *.hi
 
 #Ausgabe
 Aufgabe2/Aufgabe2
 Aufgabe2/dist
-Aufgabe2/doc/definitions.tex
+Aufgabe5/Aufgabe5
+*/definitions.tex

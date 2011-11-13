@@ -81,7 +81,7 @@ Falls das Problem nicht lösbar war, besteht die Ausgabe einzig und allein aus f
 \section{Beispielaufruf}
 
 \begin{alltt}
-\$ ./aufgabe5 cities-small.txt partnerships-small.txt
+\$ ./aufgabe5 data/cities-small.txt data/partnerships-small.txt
 'Ljubljana' - 'Wien'
 'Wien' - 'Prag'
 'Lyon' - 'Frankfurt am Main'
@@ -137,6 +137,10 @@ Falls das Problem nicht lösbar war, besteht die Ausgabe einzig und allein aus f
 'Cork' - 'Coventry'
 'Coventry' - 'Bologna'
 \end{alltt}
+
+\section{Problem}
+
+Für das große Beispiel (\texttt{cities.txt} und \texttt{partnerships.txt} findet das Programm keine Lösung. Wir nehmen an, dass das ein Fehlverhalten ist, da aber keine Lösungen oder keine Lösbarkeitsangabe auf der Website gemacht worden ist, sind wir uns nicht sicher. Wenn das Ergebnis falsch ist, dann liegt das Problem wahrscheinlich an der Implementierung des Rollbacks in \texttt{process.c}, da beim ersten, kleineren Beispiel kein Rollback notwendig war. Trotz ausführlichen Debuggings haben wir allerdings keinen Fehler gefunden.
 
 \end{document}
 

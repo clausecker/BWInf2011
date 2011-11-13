@@ -1,6 +1,5 @@
 
 #include "input.h"
-#include "output.h"
 #include "process.h"
 
 #include "def.h"
@@ -51,7 +50,7 @@ int main(int argc, char **argv)
   if(failure)
   {
     printf("failure while reading cities (%d)\n" , failure);
-    return -;
+    return -1;
   }
   failure = read_partnerships(
     fpartnerships,
