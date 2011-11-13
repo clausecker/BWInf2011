@@ -6,6 +6,7 @@ Dies sind die Lösungen zur ersten Runde des 30. Bundeswettbewerbes Informatik
 
  * Alexandra Piloth
  * Robert Clausecker
+ * Tobias Bucher
 
 Hinweise zur Compilierung
 -------------------------
@@ -15,12 +16,16 @@ Werkzeuge notwendig. Es kann sein, dass ich Dinge übersehen habe:
 
  * XeLaTeX mit Linux Libertine, getestet wurde TeXlive 2009
  * GHC Version 7 oder höher
+ * Ein C-Compiler
  * Make
  * Pygmentize
 
-Die Aufgabe 2 enthält ein Makefile zur Vereinfachung der Compilierung. Ein
+Die Aufgaben 2 und 5 enthalten Makefiles zur Vereinfachung der Kompilierung. Ein
 Aufruf `make` im Verzeichnis Aufgabe2 baut das Programm sowie die Dokumentation.
-Es sind zudem noch die Ziele `doc`, `build` und `clean` verfügbar.
+Es sind zudem noch die Ziele `doc`, `build` und `clean` verfügbar. Im Odner
+Aufgabe5 stehen hingegen nur die Ziele `all` und `clean` zur Verfügung. In
+beiden Fällen wird am Ende eine Ausführbare Datei mit dem Namen Aufgabe2 bzw.
+Aufgab5 aufzufinden sein.
 
 Für die Aufgabe 1 ist kein Makefile enthalten, ein zweimaliger Aufruf von
 `xelatex Lösung.pdf` sollte zum Bauen der Lösung ausreichen.
