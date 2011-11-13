@@ -1,0 +1,136 @@
+
+\documentclass{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[ngerman]{babel}
+\usepackage{alltt}
+\usepackage{fancyvrb}
+\usepackage{color}
+
+\include{definitions}
+
+
+\newcommand{\listSec}[1]{
+	\subsection*{#1}
+	\input{#1.tex}
+}
+
+\title{Lösung der Aufgabe~5}
+\subtitle{des 30.~Bundeswettbewerbs Informatik}
+\author{Robert Clausecker, Alexandra Piloth, Tobias Bucher}
+\date{13.~November 2011}
+
+\begin{document}
+
+\maketitle
+
+\section{Grundidee}
+
+Die Grundidee ist es, durch Backtracking (deutsch: Rücksetzverfahren) zu der richtigen Lösung zu kommen. Diese Prinzip baut auf dem Versuch-und-Irrtum-Prinzip auf: Es versucht so lange, die bisherige Lösung durch logische Schlussfolgerungen und Raten auszubauen, bis man entweder auf eine Lösung kommt, oder absehbar wird, dass der Versuch zu keiner Lösung führen wird. Wenn letzterer Fall eintritt, werden die bisherigen Ergebnisse soweit zurückgesetzt, bis man zu einem geratenen Ergebnis kommt, dass dann entsprechend angepasst wird.
+
+\section{Algorithmus}
+
+Die Städte werden in einem Array, in dem die Anzahl der verbleibenden möglichen Feste (sodass die Obergrenze eingehalten wird) und die Anzahl der bisher nicht geplanten Feste stehen, abgespeichert. Dadurch wird den Städten automatisch eine eindeutige Kennziffer gegeben, die innerhalb des zweidimensionalen Partnerschaftsarray verwendet wird. Desweiteren gibt es einen Ergebnisstack, der folgende Daten speichert: Die Kennziffer der Stadt, die das Fest für die Partnerschaft ausrichtet, die Gast-Stadt und ein Flag, ob das Ergebnis geraten oder sicher ist.
+
+Zunächst wird bei allen Städten geprüft, ob offensichtliche Szenarios existieren: Zum einen, ob sie ihr Maximum an auszurichtenden Festen bereits erreicht hat, und zum anderen, ob ihre Anzahl an noch nicht gefeierten Partnerschaften gleich ihrem restlichen Maximum an auszurichtenden Festen ist.
+
+Wenn der vorangegangene Schritt ausgeschöpft ist und nicht festgestellt worden ist, dass die aktuelle Teillösung nicht zu der Lösung führen kann, dann wird für eine Partnerschaft geraten, welche Stadt sie für die endgültige Lösung zu feiern hat. Daraufhin wird wieder mit dem ersten Schritt fortgefahren.
+
+Falls allerdings der erste Schritt aufzeigt, dass die aktuelle Teillösung unmöglich ist, wird der Ergebnisstack soweit zurückgerollt, bis man auf ein geratenes Ergebnis stößt, was daraufhin umgekehrt und als sicher markiert wird.
+
+\section{Implementation}
+Es folgt ein vollständiger Abdruck des Quelltextes. Er ist in vier Einheiten unterteilt:
+
+\begin{description}
+\item[Allgemeine Definitionen] \texttt{def.h}: Enthält die Definitionen der Datentypen \texttt{struct CITY}, \texttt{struct PARTNERSHIP} und \texttt{bool}.
+\item[Eingabe] \texttt{input.h}, \texttt{input.c}: Enthält die Eingabefunktionen, die Eingabe im Format, das in der Aufgabe beschrieben worden ist, verarbeiten kann.
+\item[Main] \texttt{main.c}: Enthält Code zur Verarbeitung der Kommandozeilenargumente sowie zur Ausgabe des Ergebnisses beziehungsweise aufgetretener Fehler.
+\item[Algorithmus] \texttt{process.h}, \texttt{process.c}: Enthält den eigentlichen Algorithmus.
+\end{description}
+
+\listSec{def.h}
+\listSec{input.h}
+\listSec{input.c}
+\listSec{process.h}
+\listSec{process.c}
+\listSec{main.c}
+
+\section{Benutzungshinweise}
+Die Eingabe der Städte erfolgt nach dem in der Aufgabe beschriebenen Methode. Die beiden Dateien werden wie folgt an das Programm übergeben:
+
+\texttt{./aufgabe5 <Städtedatei> <Partnerschaftsdatei>}
+
+Falls das Problem lösbar war, besteht die Ausgabe besteht aus Zeilen nach dem folgenden Format:
+
+\texttt{'Name der Gastgeberstadt'\ -- 'Name der anderen Stadt'}
+
+Falls das Problem nicht lösbar war, besteht die Ausgabe einzig und allein aus folgender Zeile:
+
+\texttt{impossible!}
+
+\section{Beispielaufruf}
+
+\begin{alltt}
+\$ ./aufgabe5 cities-small.txt partnerships-small.txt
+'Ljubljana' - 'Wien'
+'Wien' - 'Prag'
+'Lyon' - 'Frankfurt am Main'
+'Vilnius' - 'Ljubljana'
+'Vilnius' - 'Prag'
+'Prag' - 'Sofia'
+'Prag' - 'Frankfurt am Main'
+'Frankfurt am Main' - 'Kraków'
+'Brno' - 'Wien'
+'Brno' - 'Leipzig'
+'Brno' - 'Poznań'
+'Gdańsk' - 'Vilnius'
+'Gdańsk' - 'Boulogne-sur-Mer'
+'Gdańsk' - 'Nice'
+'Gdańsk' - 'Rotterdam'
+'Kraków' - 'Vilnius'
+'Kraków' - 'Leipzig'
+'Leipzig' - 'Lyon'
+'Leipzig' - 'Frankfurt am Main'
+'Leipzig' - 'Thessaloniki'
+'Poznań' - 'Plovdiv'
+'Poznań' - 'Hannover'
+'Nice' - 'Thessaloniki'
+'Thessaloniki' - 'Plovdiv'
+'Thessaloniki' - 'Köln'
+'Esch-sur-Alzette' - 'Rotterdam'
+'Esch-sur-Alzette' - 'Liège'
+'Esch-sur-Alzette' - 'Köln'
+'Esch-sur-Alzette' - 'Turin'
+'Rotterdam' - 'Prag'
+'Rotterdam' - 'Liège'
+'Rotterdam' - 'Turin'
+'Liège' - 'Kraków'
+'Liège' - 'Lille'
+'Liège' - 'Turin'
+'Plovdiv' - 'Brno'
+'Plovdiv' - 'Leipzig'
+'Hannover' - 'Leipzig'
+'Köln' - 'Rotterdam'
+'Köln' - 'Liège'
+'Köln' - 'Barcelona'
+'Köln' - 'Lille'
+'Köln' - 'Turin'
+'Köln' - 'Cork'
+'Bologna' - 'Leipzig'
+'Bologna' - 'Thessaloniki'
+'Bologna' - 'Valencia'
+'Valencia' - 'Plovdiv'
+'Barcelona' - 'Gdańsk'
+'Lille' - 'Esch-sur-Alzette'
+'Lille' - 'Rotterdam'
+'Lille' - 'Turin'
+'Cork' - 'Coventry'
+'Coventry' - 'Bologna'
+\end{alltt}
+
+\end{document}
+
