@@ -8,6 +8,11 @@ Dies sind die Lösungen zur ersten Runde des 30. Bundeswettbewerbes Informatik
  * Robert Clausecker
  * Tobias Bucher
 
+Diese Lösungen wurden hier platziert, um anderen zu zeigen, wie man diese
+Aufgaben potenziell lösen kann. Wir übernehmen keine Garantie für die
+Funktionsfähigkeit der Lösungen. Jeder kann diese Lösungen unter den
+Bedingungen der WTFPL, Version 2 verwenden.
+
 Hinweise zur Compilierung
 -------------------------
 
