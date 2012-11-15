@@ -1,8 +1,5 @@
 #!/usr/bin/make -f
 
-GHC = ghc
-XELATEX = xelatex
-
 .PHONY: clean doc-clean doc build-clean Aufgabe2
 
 all: doc build

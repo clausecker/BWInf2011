@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-GHC = ghc -outputdir ../dist
+GHC = ghc -outputdir ../dist -package random -package mtl
 GHCFLAGS = -O3 -Wall -rtsopts
 
 .PHONY: clean ../Aufgabe2
